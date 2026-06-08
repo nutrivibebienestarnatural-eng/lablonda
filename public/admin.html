@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La Blonda — Panel Admin</title>
+<style>
+:root{
+  --bg:#F7F5F0;--surf:#fff;--surf2:#F1EDE4;--bdr:#E2DDD4;--bdr2:#CCC7BC;
+  --tx:#1C1B18;--tx2:#6B6760;--tx3:#9E9B94;
+  --amb:#B8700F;--amb-bg:#FDF3E3;--amb-dk:#7A4800;
+  --grn:#2D6A0F;--grn-bg:#EBF4E4;
+  --red:#B02020;--red-bg:#FDEAEA;
+  --r:10px;--rsm:6px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;font-size:14px}
+
+/* LOGIN */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem}
+.login-box{background:var(--surf);border:1px solid var(--bdr);border-radius:16px;padding:2rem;width:100%;max-width:360px;text-align:center;box-shadow:0 4px 24px rgba(0,0,0,.08)}
+.login-logo{font-size:28px;font-weight:700;color:var(--amb-dk);margin-bottom:4px}
+.login-logo em{color:var(--amb);font-style:normal}
+.login-sub{font-size:13px;color:var(--tx3);margin-bottom:1.5rem}
+.login-box input{width:100%;padding:10px 14px;border:1px solid var(--bdr);border-radius:var(--rsm);font-size:15px;text-align:center;letter-spacing:.15em;margin-bottom:10px}
+.login-box input:focus{outline:none;border-color:var(--amb)}
+.login-err{font-size:12px;color:var(--red);margin-bottom:8px;min-height:16px}
+
+/* TOPBAR */
+.topbar{background:var(--surf);border-bottom:1px solid var(--bdr);padding:0 1.5rem;display:flex;align-items:center;gap:10px;height:54px;position:sticky;top:0;z-index:100}
+.logo{font-size:17px;font-weight:700;color:var(--amb-dk);flex:1}
+.logo em{color:var(--amb);font-style:normal}
+.logo small{font-size:11px;color:var(--tx3);font-weight:400;margin-left:6px}
+.nav{display:flex;gap:2px;background:var(--surf2);border-radius:8px;padding:3px}
+.nb{padding:6px 14px;border:none;background:none;cursor:pointer;font-size:13px;color:var(--tx2);border-radius:6px;font-weight:500;white-space:nowrap;transition:all .15s}
+.nb.active{background:var(--surf);color:var(--tx);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.nb:hover:not(.active){color:var(--tx)}
+.btn-logout{background:none;border:1px solid var(--bdr2);padding:5px 12px;border-radius:var(--rsm);cursor:pointer;font-size:12px;color:var(--tx2)}
+.btn-logout:hover{background:var(--red-bg);color:var(--red);border-color:var(--red)}
+
+/* LAYOUT */
+.content{max-width:1000px;margin:0 auto;padding:1.5rem}
+.pane{display:none}.pane.active{display:block}
+.sec-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--tx3);margin-bottom:.875rem}
+.card{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:1.25rem;margin-bottom:1rem;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.card-title{font-size:15px;font-weight:600;margin-bottom:1rem;display:flex;align-items:center;gap:8px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+
+/* FORM */
+.fg{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+.fg label{font-size:12px;color:var(--tx2);font-weight:500}
+.fg label .req{color:var(--red);margin-left:2px}
+.fg label .hint{font-size:11px;color:var(--tx3);font-weight:400;margin-left:4px}
+input,select,textarea{width:100%;padding:9px 11px;border:1px solid var(--bdr);border-radius:var(--rsm);font-size:14px;color:var(--tx);background:var(--surf);font-family:inherit;transition:border-color .15s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--amb);box-shadow:0 0 0 3px rgba(184,112,15,.08)}
+input[type=number]{-moz-appearance:textfield}
+textarea{resize:vertical;min-height:72px}
+.input-prefix{display:flex;align-items:center;border:1px solid var(--bdr);border-radius:var(--rsm);overflow:hidden}
+.input-prefix span{padding:9px 10px;background:var(--surf2);color:var(--tx3);font-size:13px;white-space:nowrap;border-right:1px solid var(--bdr)}
+.input-prefix input{border:none;border-radius:0;box-shadow:none}
+.input-prefix input:focus{box-shadow:none}
+
+/* BOTONES */
+.btn-main{background:var(--tx);color:#fff;border:none;padding:10px 20px;border-radius:var(--rsm);cursor:pointer;font-size:14px;font-weight:600;transition:opacity .15s}
+.btn-main:hover{opacity:.85}
+.btn-sec{background:none;border:1px solid var(--bdr2);padding:9px 16px;border-radius:var(--rsm);cursor:pointer;font-size:13px;color:var(--tx);font-weight:500}
+.btn-sec:hover{background:var(--surf2)}
+.btn-danger{background:none;border:1px solid var(--red);color:var(--red);padding:7px 12px;border-radius:var(--rsm);cursor:pointer;font-size:12px}
+.btn-danger:hover{background:var(--red-bg)}
+.btn-sm-grn{background:var(--grn-bg);border:1px solid var(--grn);color:var(--grn);padding:5px 10px;border-radius:var(--rsm);cursor:pointer;font-size:12px;font-weight:600}
+.btn-sm-amb{background:var(--amb-bg);border:1px solid var(--amb);color:var(--amb-dk);padding:5px 10px;border-radius:var(--rsm);cursor:pointer;font-size:12px;font-weight:600}
+.btn-icon{background:none;border:none;cursor:pointer;color:var(--tx3);padding:4px 6px;border-radius:4px;font-size:16px}
+.btn-icon:hover{background:var(--surf2);color:var(--tx)}
+
+/* TOGGLE */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:.875rem 0;border-bottom:1px solid var(--bdr)}
+.toggle-row:last-child{border:none}
+.toggle-lbl{font-size:13px;color:var(--tx)}
+.toggle-sub{font-size:11px;color:var(--tx3);margin-top:2px}
+.toggle{position:relative;width:44px;height:24px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;inset:0;background:var(--bdr2);border-radius:24px;transition:.3s;cursor:pointer}
+.toggle-slider:before{content:'';position:absolute;width:18px;height:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.3s}
+.toggle input:checked+.toggle-slider{background:var(--amb)}
+.toggle input:checked+.toggle-slider:before{transform:translateX(20px)}
+
+/* MESAS */
+.mesa-config-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-bottom:1rem}
+.mesa-config-item{background:var(--surf2);border:1px solid var(--bdr);border-radius:var(--rsm);padding:.875rem;position:relative}
+.mesa-config-num{font-size:16px;font-weight:700;color:var(--tx);margin-bottom:.5rem}
+.mesa-config-del{position:absolute;top:6px;right:6px}
+.mesa-add-btn{background:var(--surf);border:1px dashed var(--bdr2);border-radius:var(--rsm);padding:.875rem;text-align:center;cursor:pointer;color:var(--tx3);font-size:13px;transition:all .15s}
+.mesa-add-btn:hover{border-color:var(--amb);color:var(--amb)}
+
+/* EVENTOS */
+.evento-item{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);overflow:hidden;margin-bottom:.875rem}
+.evento-img{height:140px;background:linear-gradient(135deg,var(--amb-dk),var(--amb));display:flex;align-items:center;justify-content:center;font-size:52px;position:relative;overflow:hidden}
+.evento-img img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.evento-body{padding:1rem}
+.evento-nombre{font-size:15px;font-weight:700;margin-bottom:4px}
+.evento-meta{font-size:12px;color:var(--tx2);display:flex;gap:10px;flex-wrap:wrap;margin-bottom:.875rem}
+.evento-acts{display:flex;gap:6px;flex-wrap:wrap}
+.badge-tipo{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;background:var(--amb-bg);color:var(--amb-dk)}
+.badge-activo{background:var(--grn-bg);color:var(--grn)}
+.badge-inactivo{background:var(--surf2);color:var(--tx3)}
+
+/* LINKS */
+.link-item{background:var(--surf2);border:1px solid var(--bdr);border-radius:var(--rsm);padding:.875rem 1rem;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.link-slug{font-size:13px;font-weight:600;color:var(--amb-dk);min-width:120px}
+.link-url{font-size:12px;color:var(--tx2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.link-acts{display:flex;gap:6px;flex-shrink:0}
+
+/* STATS RESUMEN */
+.resumen-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.25rem}
+.res-card{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:1rem;text-align:center}
+.res-n{font-size:26px;font-weight:700;color:var(--tx);line-height:1}
+.res-l{font-size:11px;color:var(--tx3);margin-top:4px;text-transform:uppercase;letter-spacing:.04em}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--tx);color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:500;opacity:0;transition:opacity .3s;pointer-events:none;z-index:500;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.2)}
+.toast.show{opacity:1}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(3px)}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surf);border-radius:14px;padding:1.5rem;width:100%;max-width:560px;max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.modal-hdr h3{font-size:17px;font-weight:700}
+.modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--tx3);padding:2px 6px;border-radius:4px}
+.modal-close:hover{background:var(--surf2)}
+.modal-footer{display:flex;gap:8px;margin-top:1rem}
+
+/* IMG PREVIEW */
+.img-preview{width:100%;height:160px;border:1px dashed var(--bdr2);border-radius:var(--rsm);display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;position:relative;background:var(--surf2);transition:border-color .15s}
+.img-preview:hover{border-color:var(--amb)}
+.img-preview img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.img-preview-txt{color:var(--tx3);font-size:13px;text-align:center;pointer-events:none}
+.img-preview input{position:absolute;inset:0;opacity:0;cursor:pointer}
+
+/* TIPO ICONOS */
+.tipo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:4px}
+.tipo-btn{border:1px solid var(--bdr);background:var(--surf2);border-radius:var(--rsm);padding:8px 4px;cursor:pointer;text-align:center;font-size:11px;color:var(--tx2);transition:all .15s}
+.tipo-btn:hover{border-color:var(--amb);color:var(--amb-dk)}
+.tipo-btn.sel{border-color:var(--amb);background:var(--amb-bg);color:var(--amb-dk);font-weight:600}
+.tipo-btn .ti{font-size:20px;display:block;margin-bottom:3px}
+
+/* SEPARADOR */
+.sep{height:1px;background:var(--bdr);margin:1rem 0}
+
+@media(max-width:600px){
+  .grid2,.grid3{grid-template-columns:1fr}
+  .resumen-grid{grid-template-columns:1fr 1fr}
+  .nav .nb{padding:6px 9px;font-size:12px}
+  .tipo-grid{grid-template-columns:repeat(3,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen" class="login-wrap">
+  <div class="login-box">
+    <div class="login-logo">La <em>Blonda</em></div>
+    <div class="login-sub">Panel de Administración</div>
+    <input type="password" id="pwd-input" placeholder="Contraseña" onkeydown="if(event.key==='Enter')login()"/>
+    <div class="login-err" id="login-err"></div>
+    <button class="btn-main" style="width:100%" onclick="login()">Ingresar</button>
+    <div style="font-size:11px;color:var(--tx3);margin-top:12px">Primera vez: la contraseña por defecto es <b>admin123</b></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app-screen" style="display:none">
+
+<div class="topbar">
+  <div class="logo">La <em>Blonda</em> <small>Admin</small></div>
+  <nav class="nav">
+    <button class="nb active" onclick="tab('resumen')">📊 Resumen</button>
+    <button class="nb" onclick="tab('eventos')">🎭 Eventos</button>
+    <button class="nb" onclick="tab('mesas')">🪑 Mesas</button>
+    <button class="nb" onclick="tab('reserva')">💰 Reserva</button>
+    <button class="nb" onclick="tab('links')">🔗 Links</button>
+    <button class="nb" onclick="tab('config')">⚙️ Config</button>
+  </nav>
+  <button class="btn-logout" onclick="logout()">Salir</button>
+</div>
+
+<div class="content">
+
+<!-- RESUMEN -->
+<div id="pane-resumen" class="pane active">
+  <div class="resumen-grid" id="res-stats"></div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">🎭 Eventos activos</div>
+      <div id="res-eventos"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">🔗 Links de Instagram</div>
+      <div id="res-links"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">⚙️ Config actual</div>
+    <div id="res-config"></div>
+  </div>
+</div>
+
+<!-- EVENTOS -->
+<div id="pane-eventos" class="pane">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+    <div class="sec-title" style="margin:0">Eventos y shows</div>
+    <button class="btn-main" onclick="abrirModalEvento()">+ Nuevo evento</button>
+  </div>
+  <div id="lista-eventos"></div>
+</div>
+
+<!-- MESAS -->
+<div id="pane-mesas" class="pane">
+  <div class="card">
+    <div class="card-title">🪑 Configuración de mesas</div>
+    <p style="font-size:13px;color:var(--tx2);margin-bottom:1rem">Configurá cada mesa con su número y capacidad máxima de personas. El sistema asignará automáticamente la mejor mesa según el grupo.</p>
+    <div class="mesa-config-grid" id="mesas-grid"></div>
+    <button class="mesa-add-btn" onclick="agregarMesa()" style="display:block;width:100%">+ Agregar mesa</button>
+  </div>
+  <div class="card">
+    <div class="card-title">📊 Reglas de asignación automática</div>
+    <div class="toggle-row">
+      <div><div class="toggle-lbl">Asignación inteligente de mesas</div><div class="toggle-sub">El sistema sugiere la mesa ideal según cantidad de personas</div></div>
+      <label class="toggle"><input type="checkbox" id="t-asignacion" checked><span class="toggle-slider"></span></label>
+    </div>
+    <div class="toggle-row">
+      <div><div class="toggle-lbl">Combinar mesas automáticamente</div><div class="toggle-sub">Para grupos grandes, el sistema puede sugerir unir mesas contiguas</div></div>
+      <label class="toggle"><input type="checkbox" id="t-combinar"><span class="toggle-slider"></span></label>
+    </div>
+    <div class="sep"></div>
+    <button class="btn-main" onclick="guardarMesas()">Guardar configuración de mesas</button>
+  </div>
+</div>
+
+<!-- DERECHO DE RESERVA -->
+<div id="pane-reserva" class="pane">
+  <div class="card">
+    <div class="card-title">💰 Derecho de reserva</div>
+    <div class="toggle-row">
+      <div><div class="toggle-lbl">Activar derecho de reserva</div><div class="toggle-sub">Solicitar pago de garantía para grupos grandes</div></div>
+      <label class="toggle"><input type="checkbox" id="t-derecho" onchange="toggleDerecho()"><span class="toggle-slider"></span></label>
+    </div>
+    <div id="derecho-config" style="display:none;margin-top:1rem">
+      <div class="grid2">
+        <div class="fg">
+          <label>A partir de cuántas personas<span class="req">*</span></label>
+          <input type="number" id="d-desde" placeholder="Ej: 5" min="2" max="30"/>
+        </div>
+        <div class="fg">
+          <label>Cálculo del monto</label>
+          <select id="d-tipo">
+            <option value="por_persona">Por persona</option>
+            <option value="fijo">Monto fijo por mesa</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Monto <span class="hint">(en pesos)</span><span class="req">*</span></label>
+          <div class="input-prefix"><span>$</span><input type="number" id="d-monto" placeholder="Ej: 2000"/></div>
+        </div>
+        <div class="fg">
+          <label>Monto máximo <span class="hint">(opcional)</span></label>
+          <div class="input-prefix"><span>$</span><input type="number" id="d-maximo" placeholder="Ej: 15000"/></div>
+        </div>
+      </div>
+      <div class="sep"></div>
+      <div class="card-title" style="font-size:14px">📲 Datos de pago</div>
+      <div class="grid2">
+        <div class="fg">
+          <label>CBU / CVU</label>
+          <input type="text" id="d-cbu" placeholder="Ej: 0000003100..."/>
+        </div>
+        <div class="fg">
+          <label>Alias</label>
+          <input type="text" id="d-alias" placeholder="Ej: lablonda.mp"/>
+        </div>
+        <div class="fg">
+          <label>Titular de la cuenta</label>
+          <input type="text" id="d-titular" placeholder="Ej: Juan García"/>
+        </div>
+        <div class="fg">
+          <label>Link de Mercado Pago <span class="hint">(opcional)</span></label>
+          <input type="text" id="d-mp" placeholder="https://mpago.la/..."/>
+        </div>
+      </div>
+      <div class="sep"></div>
+      <div class="card-title" style="font-size:14px">💬 Mensaje al cliente</div>
+      <p style="font-size:12px;color:var(--tx2);margin-bottom:.75rem">Usá <code style="background:var(--surf2);padding:1px 5px;border-radius:3px">{nombre}</code>, <code style="background:var(--surf2);padding:1px 5px;border-radius:3px">{personas}</code> y <code style="background:var(--surf2);padding:1px 5px;border-radius:3px">{monto}</code> como variables.</p>
+      <div class="fg">
+        <label>Mensaje de solicitud de derecho de reserva</label>
+        <textarea id="d-mensaje" rows="6"></textarea>
+      </div>
+      <div style="background:var(--surf2);border-left:3px solid var(--amb);border-radius:0 var(--rsm) var(--rsm) 0;padding:.875rem;margin-bottom:1rem">
+        <div style="font-size:11px;font-weight:700;color:var(--amb-dk);margin-bottom:4px">Vista previa del mensaje</div>
+        <div id="d-preview" style="font-size:13px;color:var(--tx);line-height:1.7;white-space:pre-wrap"></div>
+      </div>
+    </div>
+    <div style="margin-top:1rem">
+      <button class="btn-main" onclick="guardarDerecho()">Guardar configuración</button>
+    </div>
+  </div>
+</div>
+
+<!-- LINKS -->
+<div id="pane-links" class="pane">
+  <div class="card">
+    <div class="card-title">🔗 Acortador de links para Instagram</div>
+    <p style="font-size:13px;color:var(--tx2);margin-bottom:1rem">Creá links cortos que van directo a un evento. Poné el link en el bio de Instagram y cuando alguien entra, ve el evento con botón de reserva.</p>
+    <div class="grid3" style="margin-bottom:1rem">
+      <div class="fg" style="margin:0">
+        <label>Slug (palabra corta)<span class="req">*</span></label>
+        <div class="input-prefix"><span>/e/</span><input type="text" id="l-slug" placeholder="karaoke" oninput="previewLink()"/></div>
+      </div>
+      <div class="fg" style="margin:0">
+        <label>Evento asociado</label>
+        <select id="l-evento"><option value="">— Sin evento específico —</option></select>
+      </div>
+      <div class="fg" style="margin:0">
+        <label>O URL destino libre</label>
+        <input type="text" id="l-url" placeholder="https://..." oninput="if(this.value)document.getElementById('l-evento').value=''"/>
+      </div>
+    </div>
+    <div id="l-preview" style="font-size:12px;color:var(--tx3);margin-bottom:1rem"></div>
+    <button class="btn-main" onclick="crearLink()">+ Crear link</button>
+  </div>
+  <div class="sec-title">Links creados</div>
+  <div id="lista-links"></div>
+</div>
+
+<!-- CONFIG -->
+<div id="pane-config" class="pane">
+  <div class="card">
+    <div class="card-title">🏷️ Datos del bar</div>
+    <div class="grid2">
+      <div class="fg"><label>Nombre del bar</label><input type="text" id="c-nombre" placeholder="La Blonda"/></div>
+      <div class="fg"><label>Dominio en Vercel <span class="hint">(para links)</span></label><input type="text" id="c-dominio" placeholder="lablonda.vercel.app"/></div>
+      <div class="fg"><label>Dirección</label><input type="text" id="c-dir" placeholder="Calle 123, Río Tercero"/></div>
+      <div class="fg"><label>Teléfono / WhatsApp del bar</label><input type="text" id="c-tel" placeholder="3571000000"/></div>
+      <div class="fg"><label>Instagram</label><div class="input-prefix"><span>@</span><input type="text" id="c-ig" placeholder="lablonda"/></div></div>
+      <div class="fg"><label>Horario de atención</label><input type="text" id="c-horario" placeholder="Jue a Dom de 20hs a 3hs"/></div>
+    </div>
+    <button class="btn-main" onclick="guardarConfig()">Guardar</button>
+  </div>
+  <div class="card">
+    <div class="card-title">🔐 Cambiar contraseña</div>
+    <div class="grid3">
+      <div class="fg"><label>Contraseña actual</label><input type="password" id="p-actual" placeholder="••••••"/></div>
+      <div class="fg"><label>Nueva contraseña</label><input type="password" id="p-nueva" placeholder="••••••"/></div>
+      <div class="fg"><label>Confirmar nueva</label><input type="password" id="p-conf" placeholder="••••••"/></div>
+    </div>
+    <button class="btn-main" onclick="cambiarPwd()">Cambiar contraseña</button>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--red)">⚠️ Zona de peligro</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn-danger" onclick="if(confirm('¿Borrar todos los eventos?'))borrarEventos()">Borrar todos los eventos</button>
+      <button class="btn-danger" onclick="if(confirm('¿Resetear configuración de mesas?'))resetMesas()">Resetear mesas</button>
+      <button class="btn-danger" onclick="if(confirm('¿Borrar todos los links?'))borrarLinks()">Borrar todos los links</button>
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<!-- MODAL EVENTO -->
+<div id="modal-evento" class="modal-overlay" onclick="if(event.target===this)cerrarModalEvento()">
+  <div class="modal">
+    <div class="modal-hdr">
+      <h3 id="modal-evento-titulo">Nuevo evento</h3>
+      <button class="modal-close" onclick="cerrarModalEvento()">✕</button>
+    </div>
+
+    <div class="fg">
+      <label>Nombre del evento<span class="req">*</span></label>
+      <input type="text" id="e-nombre" placeholder="Ej: Show de Tan Biónica"/>
+    </div>
+
+    <div class="fg">
+      <label>Tipo de evento</label>
+      <div class="tipo-grid" id="tipo-grid"></div>
+    </div>
+
+    <div class="grid2">
+      <div class="fg"><label>Fecha<span class="req">*</span></label><input type="date" id="e-fecha"/></div>
+      <div class="fg"><label>Hora<span class="req">*</span></label><input type="time" id="e-hora"/></div>
+      <div class="fg"><label>Precio de entrada <span class="hint">(0 = gratis)</span></label><div class="input-prefix"><span>$</span><input type="number" id="e-precio" placeholder="0"/></div></div>
+      <div class="fg"><label>Cupos disponibles <span class="hint">(0 = ilimitado)</span></label><input type="number" id="e-cupos" placeholder="0"/></div>
+    </div>
+
+    <div class="fg">
+      <label>Descripción <span class="hint">(se muestra en el pop-up al cliente)</span></label>
+      <textarea id="e-desc" placeholder="Contá de qué se trata el evento, qué pueden esperar los clientes..."></textarea>
+    </div>
+
+    <div class="fg">
+      <label>Imagen / placa del evento</label>
+      <div class="img-preview" id="img-preview" onclick="document.getElementById('e-img-input').click()">
+        <input type="file" id="e-img-input" accept="image/*" style="display:none" onchange="cargarImagen(event)"/>
+        <div class="img-preview-txt">
+          <div style="font-size:28px;margin-bottom:4px">🖼️</div>
+          <div>Tocá para subir imagen</div>
+          <div style="font-size:11px;margin-top:2px">JPG, PNG o GIF — recomendado 800×400px</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label>Emoji del evento <span class="hint">(se muestra si no hay imagen)</span></label>
+      <input type="text" id="e-emoji" placeholder="🎵" maxlength="4" style="max-width:80px"/>
+    </div>
+
+    <div class="fg">
+      <label>Slug para link corto <span class="hint">(sin espacios, sin tildes)</span></label>
+      <div class="input-prefix"><span>/e/</span><input type="text" id="e-slug" placeholder="tan-bionica"/></div>
+    </div>
+
+    <div class="toggle-row" style="padding:.625rem 0">
+      <div><div class="toggle-lbl">Evento activo</div><div class="toggle-sub">Si está activo aparece en el pop-up para los clientes</div></div>
+      <label class="toggle"><input type="checkbox" id="e-activo" checked><span class="toggle-slider"></span></label>
+    </div>
+
+    <div class="fg">
+      <label>Mensaje de Claude para este evento <span class="hint">(qué debe decir cuando alguien reserva para este evento)</span></label>
+      <textarea id="e-claude-msg" placeholder="Ej: Este es un show de covers de Tan Biónica. Las mesas más cercanas al escenario son la 1, 2 y 3. Si el grupo es grande sugerí las mesas del fondo (8, 9, 10) que tienen mejor visibilidad. El show arranca a las 22hs en punto..." rows="4"></textarea>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-main" onclick="guardarEvento()">Guardar evento</button>
+      <button class="btn-sec" onclick="cerrarModalEvento()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+const KEY_CFG = 'lablonda_admin_v1';
+const DEFAULT_PWD = 'admin123';
+const TIPOS_EVENTO = [
+  {id:'show',label:'Show en vivo',emoji:'🎸'},
+  {id:'karaoke',label:'Karaoke',emoji:'🎤'},
+  {id:'tematica',label:'Noche temática',emoji:'🌙'},
+  {id:'dj',label:'DJ / Electrónica',emoji:'🎧'},
+  {id:'standup',label:'Stand up',emoji:'🎭'},
+  {id:'deporte',label:'Deportes',emoji:'📺'},
+  {id:'promo',label:'Promo bebidas',emoji:'🍺'},
+  {id:'otro',label:'Otro',emoji:'⭐'},
+];
+
+let cfg = {
+  pwd: DEFAULT_PWD,
+  bar: {nombre:'La Blonda',dominio:'',dir:'',tel:'',ig:'',horario:''},
+  mesas: [{num:1,cap:2},{num:2,cap:2},{num:3,cap:4},{num:4,cap:4},{num:5,cap:4},{num:6,cap:6},{num:7,cap:6},{num:8,cap:8},{num:9,cap:2},{num:10,cap:4}],
+  asignacion: true,
+  combinar: false,
+  derecho: {activo:false,desde:5,tipo:'por_persona',monto:2000,maximo:0,cbu:'',alias:'',titular:'',mp:'',
+    mensaje:'¡Hola, {nombre}! 🎉\n\nTu reserva para *{personas} personas* en *La Blonda* está casi lista. 🙌\n\nPara grupos de más de {desde} personas, solicitamos un *derecho de reserva* de *${monto}*.\n\n📌 ¿Qué es esto? Es una pequeña señal que nos permite preparar todo para recibirte como merecés. Vos tenés la certeza de que tu mesa va a estar esperándote. ✨\n\n🎉 *Lo mejor de todo:* ese dinero no se pierde — se acredita al 100% en tu cuenta de La Blonda y lo usás esa misma noche en consumición. ¡Es plata tuya!\n\n💳 *Datos para transferir:*\nAlias: {alias}\nCBU: {cbu}\nTitular: {titular}\n\nCuando hagas la transferencia, mandanos el comprobante y confirmamos tu reserva. 🤝\n\n¡Nos vemos pronto en La Blonda! 🍺🔥'},
+  eventos: [],
+  links: [],
+};
+
+let editandoEventoId = null;
+let imgBase64 = null;
+let tipoSeleccionado = 'show';
+
+function guardarCfg(){ localStorage.setItem(KEY_CFG, JSON.stringify(cfg)); }
+function cargarCfg(){
+  try{
+    const d = JSON.parse(localStorage.getItem(KEY_CFG)||'{}');
+    if(d.pwd) cfg = {...cfg,...d};
+  }catch(e){}
+}
+
+// ── LOGIN ──
+function login(){
+  const pwd = document.getElementById('pwd-input').value;
+  if(pwd === cfg.pwd){
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app-screen').style.display = 'block';
+    renderAll();
+  } else {
+    document.getElementById('login-err').textContent = 'Contraseña incorrecta';
+    document.getElementById('pwd-input').value = '';
+  }
+}
+function logout(){
+  document.getElementById('app-screen').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('pwd-input').value = '';
+  document.getElementById('login-err').textContent = '';
+}
+document.getElementById('pwd-input').addEventListener('keydown', e => { if(e.key==='Enter') login(); });
+
+// ── TABS ──
+function tab(name){
+  document.querySelectorAll('.nb').forEach((b,i)=>b.classList.toggle('active',['resumen','eventos','mesas','reserva','links','config'][i]===name));
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
+  document.getElementById('pane-'+name).classList.add('active');
+  if(name==='resumen') renderResumen();
+  if(name==='eventos') renderEventos();
+  if(name==='mesas') renderMesasConfig();
+  if(name==='reserva') renderDerechoConfig();
+  if(name==='links') renderLinks();
+  if(name==='config') renderConfigForm();
+}
+
+function renderAll(){ renderResumen(); }
+
+// ── TOAST ──
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// ── RESUMEN ──
+function renderResumen(){
+  const activos = cfg.eventos.filter(e=>e.activo).length;
+  document.getElementById('res-stats').innerHTML=`
+    <div class="res-card"><div class="res-n">${cfg.mesas.length}</div><div class="res-l">Mesas</div></div>
+    <div class="res-card"><div class="res-n">${cfg.eventos.length}</div><div class="res-l">Eventos</div></div>
+    <div class="res-card"><div class="res-n" style="color:var(--grn)">${activos}</div><div class="res-l">Activos</div></div>
+    <div class="res-card"><div class="res-n">${cfg.links.length}</div><div class="res-l">Links</div></div>`;
+
+  document.getElementById('res-eventos').innerHTML = activos===0
+    ? '<div style="color:var(--tx3);font-size:13px">No hay eventos activos</div>'
+    : cfg.eventos.filter(e=>e.activo).map(e=>`
+      <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--bdr)">
+        <div style="font-size:20px">${e.emoji||'🎭'}</div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:600">${e.nombre}</div>
+          <div style="font-size:11px;color:var(--tx2)">${fmtFecha(e.fecha)} ${e.hora}</div>
+        </div>
+        <span class="badge-tipo badge-activo">Activo</span>
+      </div>`).join('');
+
+  document.getElementById('res-links').innerHTML = cfg.links.length===0
+    ? '<div style="color:var(--tx3);font-size:13px">No hay links creados</div>'
+    : cfg.links.slice(-4).map(l=>`
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--bdr)">
+        <div style="font-size:13px;font-weight:600;color:var(--amb-dk);min-width:90px">/e/${l.slug}</div>
+        <div style="font-size:11px;color:var(--tx2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.destino||'→ '+l.eventoNombre}</div>
+        <button class="btn-icon" onclick="copiarLink('${l.slug}')" title="Copiar link">📋</button>
+      </div>`).join('');
+
+  const dom = cfg.bar.dominio||'tu-dominio.vercel.app';
+  document.getElementById('res-config').innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;font-size:13px">
+      <div><span style="color:var(--tx3)">Bar:</span> ${cfg.bar.nombre||'La Blonda'}</div>
+      <div><span style="color:var(--tx3)">Dominio:</span> ${dom}</div>
+      <div><span style="color:var(--tx3)">Derecho de reserva:</span> <span style="color:${cfg.derecho.activo?'var(--grn)':'var(--red)'}">${cfg.derecho.activo?'Activo':'Inactivo'}</span></div>
+      <div><span style="color:var(--tx3)">Capacidad total:</span> ${cfg.mesas.reduce((a,m)=>a+m.cap,0)} personas</div>
+      <div><span style="color:var(--tx3)">Mesas configuradas:</span> ${cfg.mesas.length}</div>
+      <div><span style="color:var(--tx3)">Asignación auto:</span> ${cfg.asignacion?'✅ Sí':'❌ No'}</div>
+    </div>`;
+}
+
+// ── EVENTOS ──
+function renderEventos(){
+  const c = document.getElementById('lista-eventos');
+  if(!cfg.eventos.length){
+    c.innerHTML='<div style="text-align:center;color:var(--tx3);padding:3rem;font-size:14px">No hay eventos — creá el primero con el botón de arriba</div>';
+    return;
+  }
+  c.innerHTML = cfg.eventos.map(e=>`
+    <div class="evento-item">
+      <div class="evento-img">
+        ${e.img?`<img src="${e.img}" alt="${e.nombre}"/>`:''}
+        <div style="position:relative;z-index:1;font-size:52px">${e.img?'':e.emoji||'🎭'}</div>
+      </div>
+      <div class="evento-body">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:4px">
+          <div class="evento-nombre">${e.nombre}</div>
+          <span class="badge-tipo ${e.activo?'badge-activo':'badge-inactivo'}">${e.activo?'Activo':'Inactivo'}</span>
+        </div>
+        <div class="evento-meta">
+          <span>${getTipoLabel(e.tipo)}</span>
+          <span>📅 ${fmtFecha(e.fecha)} ${e.hora}</span>
+          ${e.precio>0?`<span>💵 $${Number(e.precio).toLocaleString('es-AR')}</span>`:'<span>Gratis</span>'}
+          ${e.cupos>0?`<span>🎟️ ${e.cupos} cupos</span>`:''}
+          ${e.slug?`<span>🔗 /e/${e.slug}</span>`:''}
+        </div>
+        ${e.desc?`<div style="font-size:12px;color:var(--tx2);margin-bottom:.75rem;line-height:1.5">${e.desc.substring(0,120)}${e.desc.length>120?'...':''}</div>`:''}
+        <div class="evento-acts">
+          <button class="btn-sm-amb" onclick="editarEvento('${e.id}')">✏️ Editar</button>
+          <button class="btn-sm-grn" onclick="toggleEvento('${e.id}')">${e.activo?'⏸ Desactivar':'▶️ Activar'}</button>
+          ${e.slug?`<button class="btn-sm-grn" onclick="copiarLink('${e.slug}')">🔗 Copiar link</button>`:''}
+          <button class="btn-danger" onclick="eliminarEvento('${e.id}')">🗑️ Eliminar</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function getTipoLabel(tipo){ return TIPOS_EVENTO.find(t=>t.id===tipo)?.label||tipo||'Evento'; }
+
+function abrirModalEvento(id){
+  editandoEventoId = id||null;
+  imgBase64 = null;
+  tipoSeleccionado = 'show';
+  document.getElementById('modal-evento-titulo').textContent = id?'Editar evento':'Nuevo evento';
+  renderTipoGrid();
+  const campos = ['e-nombre','e-fecha','e-hora','e-desc','e-slug','e-claude-msg'];
+  campos.forEach(id=>{ document.getElementById(id).value=''; });
+  document.getElementById('e-precio').value='0';
+  document.getElementById('e-cupos').value='0';
+  document.getElementById('e-emoji').value='🎭';
+  document.getElementById('e-activo').checked=true;
+  document.getElementById('img-preview').querySelector('.img-preview-txt').style.display='block';
+  const imgEl = document.getElementById('img-preview').querySelector('img');
+  if(imgEl) imgEl.remove();
+
+  if(id){
+    const ev = cfg.eventos.find(e=>e.id===id);
+    if(ev){
+      document.getElementById('e-nombre').value=ev.nombre||'';
+      document.getElementById('e-fecha').value=ev.fecha||'';
+      document.getElementById('e-hora').value=ev.hora||'';
+      document.getElementById('e-precio').value=ev.precio||0;
+      document.getElementById('e-cupos').value=ev.cupos||0;
+      document.getElementById('e-desc').value=ev.desc||'';
+      document.getElementById('e-slug').value=ev.slug||'';
+      document.getElementById('e-emoji').value=ev.emoji||'🎭';
+      document.getElementById('e-activo').checked=!!ev.activo;
+      document.getElementById('e-claude-msg').value=ev.claudeMsg||'';
+      tipoSeleccionado=ev.tipo||'show';
+      if(ev.img){ imgBase64=ev.img; mostrarImgPreview(ev.img); }
+      renderTipoGrid();
+    }
+  }
+  document.getElementById('modal-evento').classList.add('open');
+}
+function cerrarModalEvento(){ document.getElementById('modal-evento').classList.remove('open'); }
+
+function editarEvento(id){ abrirModalEvento(id); }
+
+function renderTipoGrid(){
+  document.getElementById('tipo-grid').innerHTML = TIPOS_EVENTO.map(t=>`
+    <div class="tipo-btn ${tipoSeleccionado===t.id?'sel':''}" onclick="selTipo('${t.id}')">
+      <span class="ti" style="font-size:20px;display:block;margin-bottom:2px">${t.emoji}</span>
+      ${t.label}
+    </div>`).join('');
+}
+function selTipo(id){ tipoSeleccionado=id; renderTipoGrid(); }
+
+function cargarImagen(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => { imgBase64=e.target.result; mostrarImgPreview(e.target.result); };
+  reader.readAsDataURL(file);
+}
+function mostrarImgPreview(src){
+  const prev = document.getElementById('img-preview');
+  prev.querySelector('.img-preview-txt').style.display='none';
+  let img = prev.querySelector('img');
+  if(!img){ img=document.createElement('img'); img.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover'; prev.appendChild(img); }
+  img.src=src;
+}
+
+function guardarEvento(){
+  const nombre = document.getElementById('e-nombre').value.trim();
+  if(!nombre){ showToast('⚠️ El nombre es obligatorio'); return; }
+  const slug = document.getElementById('e-slug').value.trim().toLowerCase().replace(/\s+/g,'-');
+  const ev = {
+    id: editandoEventoId||(Date.now().toString()),
+    nombre, tipo:tipoSeleccionado,
+    fecha:document.getElementById('e-fecha').value,
+    hora:document.getElementById('e-hora').value,
+    precio:parseFloat(document.getElementById('e-precio').value)||0,
+    cupos:parseInt(document.getElementById('e-cupos').value)||0,
+    desc:document.getElementById('e-desc').value.trim(),
+    slug, emoji:document.getElementById('e-emoji').value||'🎭',
+    activo:document.getElementById('e-activo').checked,
+    claudeMsg:document.getElementById('e-claude-msg').value.trim(),
+    img:imgBase64||null,
+  };
+  if(editandoEventoId){
+    const idx=cfg.eventos.findIndex(e=>e.id===editandoEventoId);
+    if(idx>=0) cfg.eventos[idx]=ev;
+  } else {
+    cfg.eventos.push(ev);
+    if(slug){ cfg.links.push({slug,eventoId:ev.id,eventoNombre:ev.nombre,destino:''}); }
+  }
+  guardarCfg();
+  cerrarModalEvento();
+  renderEventos();
+  showToast('Evento guardado ✓');
+}
+
+function toggleEvento(id){
+  const ev=cfg.eventos.find(e=>e.id===id);
+  if(ev){ ev.activo=!ev.activo; guardarCfg(); renderEventos(); showToast(ev.activo?'Evento activado ✓':'Evento desactivado'); }
+}
+function eliminarEvento(id){
+  if(!confirm('¿Eliminar este evento?')) return;
+  cfg.eventos=cfg.eventos.filter(e=>e.id!==id);
+  guardarCfg(); renderEventos(); showToast('Evento eliminado');
+}
+
+// ── MESAS ──
+function renderMesasConfig(){
+  document.getElementById('t-asignacion').checked=cfg.asignacion;
+  document.getElementById('t-combinar').checked=cfg.combinar;
+  const g=document.getElementById('mesas-grid');
+  g.innerHTML=cfg.mesas.map((m,i)=>`
+    <div class="mesa-config-item">
+      <button class="btn-icon mesa-config-del" onclick="eliminarMesa(${i})" title="Eliminar mesa">✕</button>
+      <div class="mesa-config-num">Mesa ${m.num}</div>
+      <div class="fg" style="margin:0">
+        <label>Número</label>
+        <input type="number" value="${m.num}" min="1" max="99" onchange="cfg.mesas[${i}].num=parseInt(this.value)"/>
+      </div>
+      <div class="fg" style="margin-top:6px;margin-bottom:0">
+        <label>Capacidad (personas)</label>
+        <input type="number" value="${m.cap}" min="1" max="50" onchange="cfg.mesas[${i}].cap=parseInt(this.value)"/>
+      </div>
+    </div>`).join('');
+}
+function agregarMesa(){
+  const max=cfg.mesas.reduce((a,m)=>Math.max(a,m.num),0);
+  cfg.mesas.push({num:max+1,cap:4});
+  renderMesasConfig();
+}
+function eliminarMesa(i){
+  if(!confirm('¿Eliminar esta mesa?')) return;
+  cfg.mesas.splice(i,1);
+  renderMesasConfig();
+}
+function guardarMesas(){
+  cfg.asignacion=document.getElementById('t-asignacion').checked;
+  cfg.combinar=document.getElementById('t-combinar').checked;
+  guardarCfg();
+  showToast('Mesas guardadas ✓');
+}
+function resetMesas(){
+  cfg.mesas=[{num:1,cap:2},{num:2,cap:2},{num:3,cap:4},{num:4,cap:4},{num:5,cap:4},{num:6,cap:6},{num:7,cap:6},{num:8,cap:8},{num:9,cap:2},{num:10,cap:4}];
+  guardarCfg();renderMesasConfig();showToast('Mesas reseteadas');
+}
+
+// ── DERECHO DE RESERVA ──
+function toggleDerecho(){
+  const activo=document.getElementById('t-derecho').checked;
+  document.getElementById('derecho-config').style.display=activo?'block':'none';
+}
+function renderDerechoConfig(){
+  const d=cfg.derecho;
+  document.getElementById('t-derecho').checked=d.activo;
+  document.getElementById('derecho-config').style.display=d.activo?'block':'none';
+  document.getElementById('d-desde').value=d.desde||5;
+  document.getElementById('d-tipo').value=d.tipo||'por_persona';
+  document.getElementById('d-monto').value=d.monto||2000;
+  document.getElementById('d-maximo').value=d.maximo||0;
+  document.getElementById('d-cbu').value=d.cbu||'';
+  document.getElementById('d-alias').value=d.alias||'';
+  document.getElementById('d-titular').value=d.titular||'';
+  document.getElementById('d-mp').value=d.mp||'';
+  document.getElementById('d-mensaje').value=d.mensaje||'';
+  actualizarPreview();
+  document.getElementById('d-mensaje').addEventListener('input',actualizarPreview);
+  document.getElementById('d-monto').addEventListener('input',actualizarPreview);
+  document.getElementById('d-desde').addEventListener('input',actualizarPreview);
+}
+function actualizarPreview(){
+  const msg = document.getElementById('d-mensaje').value;
+  const monto = document.getElementById('d-monto').value;
+  const desde = document.getElementById('d-desde').value;
+  const alias = document.getElementById('d-alias').value||'lablonda.mp';
+  const cbu = document.getElementById('d-cbu').value||'0000...';
+  const titular = document.getElementById('d-titular').value||'La Blonda';
+  document.getElementById('d-preview').textContent = msg
+    .replace(/{nombre}/g,'García')
+    .replace(/{personas}/g,'6')
+    .replace(/{monto}/g,'$'+Number(monto||0).toLocaleString('es-AR'))
+    .replace(/{desde}/g,desde||5)
+    .replace(/{alias}/g,alias)
+    .replace(/{cbu}/g,cbu)
+    .replace(/{titular}/g,titular);
+}
+function guardarDerecho(){
+  cfg.derecho = {
+    activo:document.getElementById('t-derecho').checked,
+    desde:parseInt(document.getElementById('d-desde').value)||5,
+    tipo:document.getElementById('d-tipo').value,
+    monto:parseFloat(document.getElementById('d-monto').value)||0,
+    maximo:parseFloat(document.getElementById('d-maximo').value)||0,
+    cbu:document.getElementById('d-cbu').value.trim(),
+    alias:document.getElementById('d-alias').value.trim(),
+    titular:document.getElementById('d-titular').value.trim(),
+    mp:document.getElementById('d-mp').value.trim(),
+    mensaje:document.getElementById('d-mensaje').value,
+  };
+  guardarCfg();showToast('Configuración guardada ✓');
+}
+
+// ── LINKS ──
+function previewLink(){
+  const slug=document.getElementById('l-slug').value.trim();
+  const dom=cfg.bar.dominio||'tu-dominio.vercel.app';
+  document.getElementById('l-preview').textContent=slug?`Link: ${dom}/e/${slug}`:'';
+}
+function renderLinks(){
+  const sel=document.getElementById('l-evento');
+  sel.innerHTML='<option value="">— Sin evento específico —</option>';
+  cfg.eventos.forEach(e=>{ const o=document.createElement('option');o.value=e.id;o.textContent=e.nombre;sel.appendChild(o); });
+  const c=document.getElementById('lista-links');
+  if(!cfg.links.length){c.innerHTML='<div style="color:var(--tx3);font-size:13px;padding:1rem 0">No hay links creados</div>';return;}
+  const dom=cfg.bar.dominio||'tu-dominio.vercel.app';
+  c.innerHTML=cfg.links.map((l,i)=>`
+    <div class="link-item">
+      <div class="link-slug">/e/${l.slug}</div>
+      <div class="link-url">${dom}/e/${l.slug} → ${l.eventoNombre||l.destino||'—'}</div>
+      <div class="link-acts">
+        <button class="btn-sm-grn" onclick="copiarLink('${l.slug}')">📋 Copiar</button>
+        <button class="btn-danger" onclick="eliminarLink(${i})">🗑️</button>
+      </div>
+    </div>`).join('');
+}
+function crearLink(){
+  const slug=document.getElementById('l-slug').value.trim().toLowerCase().replace(/\s+/g,'-');
+  if(!slug){showToast('⚠️ Ingresá un slug');return;}
+  if(cfg.links.find(l=>l.slug===slug)){showToast('⚠️ Ya existe ese slug');return;}
+  const evId=document.getElementById('l-evento').value;
+  const ev=cfg.eventos.find(e=>e.id===evId);
+  const url=document.getElementById('l-url').value.trim();
+  cfg.links.push({slug,eventoId:evId||'',eventoNombre:ev?.nombre||'',destino:url});
+  document.getElementById('l-slug').value='';
+  document.getElementById('l-url').value='';
+  document.getElementById('l-preview').textContent='';
+  guardarCfg();renderLinks();showToast('Link creado ✓');
+}
+function copiarLink(slug){
+  const dom=cfg.bar.dominio||'tu-dominio.vercel.app';
+  const url=`https://${dom}/e/${slug}`;
+  if(navigator.clipboard) navigator.clipboard.writeText(url).then(()=>showToast('Link copiado ✓'));
+}
+function eliminarLink(i){
+  if(!confirm('¿Eliminar este link?'))return;
+  cfg.links.splice(i,1);guardarCfg();renderLinks();showToast('Link eliminado');
+}
+function borrarLinks(){cfg.links=[];guardarCfg();renderLinks();showToast('Links eliminados');}
+function borrarEventos(){cfg.eventos=[];guardarCfg();renderEventos();showToast('Eventos eliminados');}
+
+// ── CONFIG ──
+function renderConfigForm(){
+  document.getElementById('c-nombre').value=cfg.bar.nombre||'La Blonda';
+  document.getElementById('c-dominio').value=cfg.bar.dominio||'';
+  document.getElementById('c-dir').value=cfg.bar.dir||'';
+  document.getElementById('c-tel').value=cfg.bar.tel||'';
+  document.getElementById('c-ig').value=cfg.bar.ig||'';
+  document.getElementById('c-horario').value=cfg.bar.horario||'';
+}
+function guardarConfig(){
+  cfg.bar={
+    nombre:document.getElementById('c-nombre').value.trim()||'La Blonda',
+    dominio:document.getElementById('c-dominio').value.trim().replace(/^https?:\/\//,''),
+    dir:document.getElementById('c-dir').value.trim(),
+    tel:document.getElementById('c-tel').value.trim(),
+    ig:document.getElementById('c-ig').value.trim().replace('@',''),
+    horario:document.getElementById('c-horario').value.trim(),
+  };
+  guardarCfg();showToast('Configuración guardada ✓');
+}
+function cambiarPwd(){
+  const actual=document.getElementById('p-actual').value;
+  const nueva=document.getElementById('p-nueva').value;
+  const conf=document.getElementById('p-conf').value;
+  if(actual!==cfg.pwd){showToast('⚠️ Contraseña actual incorrecta');return;}
+  if(nueva.length<4){showToast('⚠️ La contraseña debe tener al menos 4 caracteres');return;}
+  if(nueva!==conf){showToast('⚠️ Las contraseñas no coinciden');return;}
+  cfg.pwd=nueva;guardarCfg();
+  ['p-actual','p-nueva','p-conf'].forEach(id=>document.getElementById(id).value='');
+  showToast('Contraseña cambiada ✓');
+}
+
+// ── UTILS ──
+function fmtFecha(f){if(!f)return '—';const[y,m,d]=f.split('-');return d+'/'+m+'/'+y;}
+
+// ── INIT ──
+cargarCfg();
+</script>
+</body>
+</html>

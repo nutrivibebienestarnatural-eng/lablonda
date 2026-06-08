@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#B8700F">
+<link rel="manifest" href="/manifest.json">
+<title>La Blonda — Evento</title>
+<style>
+:root{--amb:#B8700F;--amb-bg:#FDF3E3;--amb-dk:#7A4800;--grn:#2D6A0F;--grn-bg:#EBF4E4;--tx:#1C1B18;--tx2:#6B6760;--tx3:#9E9B94;--surf:#fff;--surf2:#F1EDE4;--bdr:#E2DDD4;--red:#B02020;--r:12px;--rsm:8px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#1a1008;color:#fff;min-height:100vh}
+.evento-hero{position:relative;min-height:340px;display:flex;align-items:flex-end;overflow:hidden}
+.evento-bg{position:absolute;inset:0;background:linear-gradient(135deg,#7A4800,#B8700F);display:flex;align-items:center;justify-content:center;font-size:100px}
+.evento-bg img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.evento-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(26,16,8,.95) 30%,transparent 70%)}
+.evento-info{position:relative;z-index:1;padding:1.5rem;width:100%}
+.evento-badge{display:inline-block;background:rgba(184,112,15,.3);border:1px solid var(--amb);color:#FFD580;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:3px 10px;border-radius:20px;margin-bottom:.75rem;backdrop-filter:blur(4px)}
+.evento-titulo{font-size:28px;font-weight:800;line-height:1.2;margin-bottom:.5rem;text-shadow:0 2px 8px rgba(0,0,0,.5)}
+.evento-meta{display:flex;gap:12px;flex-wrap:wrap;font-size:13px;color:rgba(255,255,255,.75);margin-bottom:1.25rem}
+.evento-precio{font-size:18px;font-weight:700;color:#FFD580}
+.btn-reservar{width:100%;background:var(--amb);color:#fff;border:none;padding:14px;border-radius:var(--rsm);font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .15s}
+.btn-reservar:hover{background:var(--amb-dk)}
+.chat-section{background:var(--surf);border-radius:20px 20px 0 0;margin-top:-20px;position:relative;z-index:2;min-height:60vh;display:flex;flex-direction:column}
+.chat-hdr{padding:1.25rem 1.25rem .875rem;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:10px}
+.chat-av{width:42px;height:42px;background:var(--amb-bg);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.chat-name{font-weight:700;font-size:15px;color:var(--tx)}
+.chat-status{font-size:12px;color:var(--grn)}
+.chat-msgs{flex:1;padding:1rem;display:flex;flex-direction:column;gap:10px;min-height:300px;overflow-y:auto}
+.burbuja{max-width:82%;padding:.75rem 1rem;border-radius:12px;font-size:14px;line-height:1.6;word-wrap:break-word}
+.bot{background:var(--surf2);border:1px solid var(--bdr);color:var(--tx);align-self:flex-start;border-radius:4px 12px 12px 12px}
+.usr{background:var(--amb);color:#fff;align-self:flex-end;border-radius:12px 4px 12px 12px}
+.bot-nm{font-size:10px;color:var(--tx3);font-weight:700;margin-bottom:4px}
+.typing{display:flex;gap:4px;align-items:center;padding:.5rem .625rem}
+.dot{width:7px;height:7px;background:var(--tx3);border-radius:50%;animation:bounce .8s infinite}
+.dot:nth-child(2){animation-delay:.15s}.dot:nth-child(3){animation-delay:.3s}
+.chat-inp-area{padding:.875rem;border-top:1px solid var(--bdr);display:flex;gap:8px;background:var(--surf)}
+.chat-inp{flex:1;border:1px solid var(--bdr);border-radius:22px;padding:10px 16px;font-size:14px;font-family:inherit;resize:none;color:var(--tx);background:var(--surf)}
+.chat-inp:focus{outline:none;border-color:var(--amb)}
+.btn-send{background:var(--amb);color:#fff;border:none;width:44px;height:44px;border-radius:50%;cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;align-self:flex-end}
+.btn-send:hover{background:var(--amb-dk)}
+.confirm-card{background:var(--grn-bg);border:1px solid var(--grn);border-radius:var(--r);padding:1rem;margin-top:.75rem}
+.confirm-title{font-size:14px;font-weight:700;color:var(--grn);margin-bottom:.5rem}
+.confirm-detail{font-size:13px;color:#1C3A10;line-height:1.6}
+.btn-wa-confirm{background:#25D366;color:#fff;border:none;padding:10px 18px;border-radius:var(--rsm);cursor:pointer;font-size:14px;font-weight:700;display:inline-flex;align-items:center;gap:6px;margin-top:.75rem;width:100%;justify-content:center}
+.cupos-bar{height:6px;background:rgba(255,255,255,.2);border-radius:3px;margin-top:.5rem;overflow:hidden}
+.cupos-fill{height:100%;border-radius:3px;background:var(--amb);transition:width .5s}
+@keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}
+</style>
+</head>
+<body>
+<div class="evento-hero">
+  <div class="evento-bg" id="ev-bg"><div id="ev-emoji">🎭</div></div>
+  <div class="evento-overlay"></div>
+  <div class="evento-info">
+    <div class="evento-badge" id="ev-badge">Evento especial</div>
+    <div class="evento-titulo" id="ev-titulo">Cargando...</div>
+    <div class="evento-meta" id="ev-meta"></div>
+    <div class="evento-precio" id="ev-precio"></div>
+  </div>
+</div>
+
+<div class="chat-section">
+  <div class="chat-hdr">
+    <div class="chat-av">🍺</div>
+    <div>
+      <div class="chat-name">Asistente La Blonda</div>
+      <div class="chat-status">● En línea — Reservá ahora</div>
+    </div>
+  </div>
+  <div class="chat-msgs" id="chat-msgs"></div>
+  <div class="chat-inp-area">
+    <textarea class="chat-inp" id="chat-inp" placeholder="Escribí tu consulta..." rows="1" onkeydown="chatKey(event)"></textarea>
+    <button class="btn-send" onclick="chatEnviar()">➤</button>
+  </div>
+</div>
+
+<script>
+const KEY_CFG = 'lablonda_admin_v1';
+const KEY_RES = 'lablonda_v3';
+let cfg = {};
+let evento = null;
+let chatHist = [];
+let slug = '';
+
+function cargarCfg() {
+  try { cfg = JSON.parse(localStorage.getItem(KEY_CFG) || '{}'); } catch(e) {}
+}
+
+function getSlug() {
+  const parts = window.location.pathname.split('/');
+  return parts[parts.length - 1] || parts[parts.length - 2] || '';
+}
+
+function cargarEvento() {
+  slug = getSlug();
+  const link = (cfg.links || []).find(l => l.slug === slug);
+  if (link?.eventoId) {
+    evento = (cfg.eventos || []).find(e => e.id === link.eventoId);
+  }
+  if (!evento) {
+    evento = (cfg.eventos || []).find(e => e.slug === slug && e.activo);
+  }
+  renderEvento();
+}
+
+function renderEvento() {
+  if (!evento) {
+    document.getElementById('ev-titulo').textContent = 'Evento no encontrado';
+    document.getElementById('ev-badge').textContent = 'La Blonda';
+    initChat('Hola! No encontré el evento específico, pero puedo ayudarte a reservar una mesa en La Blonda. ¿Para cuándo querés venir? 🍺');
+    return;
+  }
+  const TIPOS = {show:'🎸 Show en vivo',karaoke:'🎤 Karaoke',tematica:'🌙 Noche temática',dj:'🎧 DJ / Electrónica',standup:'🎭 Stand up',deporte:'📺 Deportes',promo:'🍺 Promo bebidas',otro:'⭐ Evento especial'};
+  document.title = `${evento.nombre} — La Blonda`;
+  document.getElementById('ev-badge').textContent = TIPOS[evento.tipo] || 'Evento especial';
+  document.getElementById('ev-titulo').textContent = evento.nombre;
+  document.getElementById('ev-emoji').textContent = evento.emoji || '🎭';
+  if (evento.img) {
+    const bg = document.getElementById('ev-bg');
+    const img = document.createElement('img');
+    img.src = evento.img;
+    img.alt = evento.nombre;
+    bg.appendChild(img);
+  }
+  const meta = [];
+  if (evento.fecha) { const[y,m,d]=evento.fecha.split('-'); meta.push(`📅 ${d}/${m}/${y}`); }
+  if (evento.hora) meta.push(`🕐 ${evento.hora} hs`);
+  if (evento.cupos > 0) meta.push(`🎟️ ${evento.cupos} cupos`);
+  document.getElementById('ev-meta').textContent = meta.join('  ·  ');
+  document.getElementById('ev-precio').textContent = evento.precio > 0 ? `$${Number(evento.precio).toLocaleString('es-AR')} entrada` : '🎉 Entrada libre';
+
+  const saludo = `¡Hola! 👋 Bienvenido al evento *${evento.nombre}*.\n\n${evento.desc ? evento.desc + '\n\n' : ''}Para reservar tu mesa, decime:\n👤 Tu nombre\n📱 Tu teléfono\n📅 La fecha\n🕐 La hora que llegás\n👥 Cuántas personas son\n\n¡Te guardamos el mejor lugar! 🍺🔥`;
+  initChat(saludo);
+}
+
+function initChat(saludo) {
+  document.getElementById('chat-msgs').innerHTML = '';
+  chatHist = [];
+  chatMsg(saludo, true);
+}
+
+function chatKey(e) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();chatEnviar();} }
+
+function chatMsg(texto, esBot, extra) {
+  const c = document.getElementById('chat-msgs');
+  const d = document.createElement('div');
+  d.className = 'burbuja ' + (esBot ? 'bot' : 'usr');
+  if (esBot) { const n = document.createElement('div'); n.className = 'bot-nm'; n.textContent = 'La Blonda'; d.appendChild(n); }
+  const p = document.createElement('p'); p.style.margin = '0'; p.style.whiteSpace = 'pre-wrap'; p.textContent = texto; d.appendChild(p);
+  if (extra) d.appendChild(extra);
+  c.appendChild(d); c.scrollTop = c.scrollHeight;
+}
+
+function chatTyping() {
+  const c = document.getElementById('chat-msgs');
+  const d = document.createElement('div'); d.className = 'burbuja bot'; d.id = 'typing';
+  d.innerHTML = '<div class="bot-nm">La Blonda</div><div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
+  c.appendChild(d); c.scrollTop = c.scrollHeight;
+}
+
+async function chatEnviar() {
+  const inp = document.getElementById('chat-inp');
+  const txt = inp.value.trim(); if (!txt) return;
+  inp.value = ''; inp.style.height = 'auto';
+  chatMsg(txt, false);
+  chatHist.push({ role: 'user', content: txt });
+  chatTyping();
+
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: chatHist, cfg, eventoActual: evento })
+    });
+    const data = await res.json();
+    document.getElementById('typing')?.remove();
+    chatHist.push({ role: 'assistant', content: data.texto });
+
+    if (data.accion?.ACCION === 'RESERVAR') {
+      guardarReserva(data.accion);
+      const extra = crearConfirmCard(data.accion);
+      chatMsg(data.texto, true, extra);
+    } else {
+      chatMsg(data.texto, true);
+    }
+  } catch(e) {
+    document.getElementById('typing')?.remove();
+    chatMsg('Ups, hubo un problema de conexión. Intentá de nuevo en un momento.', true);
+  }
+}
+
+function guardarReserva(accion) {
+  try {
+    const stored = JSON.parse(localStorage.getItem(KEY_RES) || '{}');
+    const reservas = stored.reservas || [];
+    const nid = stored.nid || 1;
+    reservas.push({
+      id: nid, nombre: accion.nombre, tel: accion.telefono,
+      fecha: accion.fecha, hora: accion.hora, mesa: accion.mesa,
+      pax: accion.personas, operador: 'Chat web', notas: accion.evento || '',
+      estado: 'reservada'
+    });
+    localStorage.setItem(KEY_RES, JSON.stringify({ ...stored, reservas, nid: nid + 1 }));
+  } catch(e) {}
+}
+
+function crearConfirmCard(accion) {
+  const bar = cfg.bar || {};
+  const d = document.createElement('div');
+  d.className = 'confirm-card';
+  const[y,m,dd] = (accion.fecha||'').split('-');
+  d.innerHTML = `<div class="confirm-title">✅ ¡Reserva confirmada!</div>
+    <div class="confirm-detail">
+      👤 ${accion.nombre}<br>
+      📅 ${dd||'—'}/${m||'—'}/${y||'—'} — ${accion.hora||'—'} hs<br>
+      🪑 Mesa ${accion.mesa} · ${accion.personas} personas<br>
+      ${accion.evento ? '🎭 ' + accion.evento : ''}
+    </div>`;
+  const msg = `¡Hola! Reservé una mesa en La Blonda 🍺\n\n📅 ${dd}/${m}/${y} — ${accion.hora} hs\n🪑 Mesa ${accion.mesa} · ${accion.personas} personas\n${accion.evento ? '🎭 Evento: ' + accion.evento + '\n' : ''}\nNombre: ${accion.nombre}`;
+  const tel = (bar.tel || '').replace(/\D/g, '');
+  const num = tel.startsWith('54') ? tel : '54' + tel;
+  if (tel) {
+    const btn = document.createElement('button');
+    btn.className = 'btn-wa-confirm';
+    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.117.554 4.1 1.523 5.82L.057 23.272a.75.75 0 0 0 .916.924l5.635-1.478A11.952 11.952 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.87 0-3.628-.507-5.147-1.391l-.369-.218-3.818 1.002 1.017-3.712-.24-.38A9.961 9.961 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg> Confirmar por WhatsApp';
+    btn.onclick = () => window.open(`https://wa.me/${num}?text=${encodeURIComponent(msg)}`);
+    d.appendChild(btn);
+  }
+  return d;
+}
+
+cargarCfg();
+cargarEvento();
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
+</script>
+</body>
+</html>
