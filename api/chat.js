@@ -11,13 +11,32 @@ export default async function handler(req, res) {
   const derecho = cfg?.derecho || {};
   const eventos = cfg?.eventos || [];
 
-  const mesasSummary = mesas.map(m => `Mesa ${m.num}: hasta ${m.cap} personas`).join(', ');
+  const SUPABASE_URL = process.env.SUPABASE_URL;
+  const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY;
+
+  // Leer reservas activas de Supabase
+  let reservasActivas = [];
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/reservas?estado=eq.reservada&select=mesa,fecha,hora,nombre,personas`, {
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`
+      }
+    });
+    reservasActivas = await r.json();
+  } catch(e) {}
+
+  const mesasSummary = mesas.map(m => {
+    const ocupada = reservasActivas.find(r => r.mesa === m.num);
+    return `Mesa ${m.num}: hasta ${m.cap} personas — ${ocupada ? 'RESERVADA (' + ocupada.fecha + ' ' + ocupada.hora + ' hs, ' + ocupada.nombre + ')' : 'LIBRE'}`;
+  }).join('\n');
+
   const eventoInfo = eventoActual
-    ? `\n\nEL CLIENTE ENTRÓ POR EL LINK DEL EVENTO: "${eventoActual.nombre}" (${eventoActual.tipo}) — ${eventoActual.fecha ? new Date(eventoActual.fecha).toLocaleDateString('es-AR') : ''} ${eventoActual.hora || ''}hs${eventoActual.precio > 0 ? ` — Entrada: $${eventoActual.precio}` : ' — Entrada libre'}${eventoActual.cupos > 0 ? ` — ${eventoActual.cupos} cupos` : ''}.\n${eventoActual.claudeMsg ? 'INSTRUCCIONES ESPECIALES PARA ESTE EVENTO: ' + eventoActual.claudeMsg : ''}`
+    ? `\n\nEL CLIENTE ENTRÓ POR EL LINK DEL EVENTO: "${eventoActual.nombre}" (${eventoActual.tipo}) — ${eventoActual.fecha ? new Date(eventoActual.fecha).toLocaleDateString('es-AR') : ''} ${eventoActual.hora || ''}hs${eventoActual.precio > 0 ? ` — Entrada: $${eventoActual.precio}` : ' — Entrada libre'}${eventoActual.cupos > 0 ? ` — ${eventoActual.cupos} cupos` : ''}.\n${eventoActual.claudeMsg ? 'INSTRUCCIONES ESPECIALES: ' + eventoActual.claudeMsg : ''}`
     : '';
 
   const derechoInfo = derecho.activo
-    ? `\n\nDERECHO DE RESERVA: Se aplica para grupos de ${derecho.desde}+ personas. Monto: ${derecho.tipo === 'por_persona' ? '$' + derecho.monto + ' por persona' : '$' + derecho.monto + ' fijo'}${derecho.maximo > 0 ? ' (máximo $' + derecho.maximo + ')' : ''}. CBU: ${derecho.cbu || '—'}, Alias: ${derecho.alias || '—'}, Titular: ${derecho.titular || '—'}${derecho.mp ? ', MP: ' + derecho.mp : ''}.`
+    ? `\n\nDERECHO DE RESERVA: Se aplica para grupos de ${derecho.desde}+ personas. Monto: ${derecho.tipo === 'por_persona' ? '$' + derecho.monto + ' por persona' : '$' + derecho.monto + ' fijo'}. CBU: ${derecho.cbu || '—'}, Alias: ${derecho.alias || '—'}, Titular: ${derecho.titular || '—'}${derecho.mp ? ', MP: ' + derecho.mp : ''}.`
     : '';
 
   const system = `Sos el asistente virtual de *${bar.nombre || 'La Blonda'}*, un bar con mucha onda en Argentina.
@@ -30,23 +49,23 @@ DATOS DEL BAR:
 - Instagram: @${bar.ig || 'lablonda'}
 - WhatsApp: ${bar.tel || '—'}
 
-MESAS DISPONIBLES: ${mesasSummary || 'Consultá disponibilidad'}
+ESTADO ACTUAL DE MESAS (tiempo real desde base de datos):
+${mesasSummary || 'Sin información de mesas'}
 ${eventoInfo}
 ${derechoInfo}
 
-EVENTOS ACTIVOS HOY:
+EVENTOS ACTIVOS:
 ${eventos.filter(e=>e.activo).map(e=>`- ${e.nombre} (${e.tipo}) — ${e.fecha || 'Sin fecha'} ${e.hora || ''}hs${e.precio > 0 ? ' $'+e.precio : ' gratis'}`).join('\n') || '- Sin eventos especiales'}
 
 REGLAS IMPORTANTES:
 1. Recolectá siempre: nombre completo, teléfono, fecha, hora, cantidad de personas
-2. Sugerí la mesa más adecuada según la capacidad: ${mesas.map(m=>`Mesa ${m.num} (${m.cap} pers)`).join(', ')}
-3. Si el grupo supera ${derecho.activo ? derecho.desde : 5} personas${derecho.activo ? ', informá el derecho de reserva con el mensaje del sistema' : ''}
-4. Cuando tengas TODOS los datos (nombre, tel, fecha, hora, mesa, personas), respondé el mensaje normal Y al final incluí este JSON exacto (sin markdown):
+2. Sugerí la mesa más adecuada según capacidad y disponibilidad REAL
+3. Si el grupo supera ${derecho.activo ? derecho.desde : 5} personas${derecho.activo ? ', informá el derecho de reserva' : ''}
+4. Cuando tengas TODOS los datos confirmados, respondé el mensaje normal Y al final incluí este JSON exacto:
    {"ACCION":"RESERVAR","nombre":"...","telefono":"...","fecha":"YYYY-MM-DD","hora":"HH:MM","mesa":N,"personas":N,"evento":"${eventoActual?.nombre || ''}"}
-5. Si el cliente pide cancelar, pedí sus datos y respondé con: {"ACCION":"CANCELAR","nombre":"...","telefono":"..."}
-6. Tono: alegre, argentino, con emojis moderados, serio cuando hace falta
-7. Nunca inventés disponibilidad — si no sabés, decí que confirmás y que se comuniquen al WhatsApp del bar
-8. Si el evento tiene derecho de reserva, usá el mensaje configurado en el sistema reemplazando las variables`;
+5. Si el cliente pide cancelar: {"ACCION":"CANCELAR","nombre":"...","telefono":"..."}
+6. Tono: alegre, argentino, con emojis moderados
+7. Nunca confirmes una mesa que figura como RESERVADA en el estado actual`;
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -68,15 +87,59 @@ REGLAS IMPORTANTES:
     const texto = data.content?.[0]?.text || 'Disculpá, hubo un problema. Intentá de nuevo.';
 
     let accion = null;
-    const jsonMatch = texto.match(/\{[^{}]*"ACCION"\s*:\s*"[^"]+[^{}]*\}/s);
+    const jsonMatch = texto.match(/\{"ACCION"[^}]+\}/s);
     if (jsonMatch) {
       try { accion = JSON.parse(jsonMatch[0]); } catch(e) {}
     }
 
-    const textoLimpio = texto.replace(/\{[^{}]*"ACCION"\s*:\s*"[^"]+[^{}]*\}/gs, '').trim();
+    const textoLimpio = texto.replace(/\{"ACCION"[^}]+\}/gs, '').trim();
+
+    // Si hay reserva, guardarla en Supabase
+    if (accion?.ACCION === 'RESERVAR' && SUPABASE_URL && SUPABASE_KEY) {
+      try {
+        await fetch(`${SUPABASE_URL}/rest/v1/reservas`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`,
+            'Prefer': 'return=minimal'
+          },
+          body: JSON.stringify({
+            nombre: accion.nombre,
+            telefono: accion.telefono,
+            fecha: accion.fecha,
+            hora: accion.hora,
+            mesa: accion.mesa,
+            personas: accion.personas,
+            estado: 'reservada',
+            operador: 'Chat web',
+            notas: accion.evento || '',
+            evento: accion.evento || ''
+          })
+        });
+      } catch(e) { console.error('Error guardando en Supabase:', e); }
+    }
+
+    // Si cancela, actualizar en Supabase
+    if (accion?.ACCION === 'CANCELAR' && SUPABASE_URL && SUPABASE_KEY) {
+      try {
+        await fetch(`${SUPABASE_URL}/rest/v1/reservas?telefono=eq.${accion.telefono}&estado=eq.reservada`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`,
+            'Prefer': 'return=minimal'
+          },
+          body: JSON.stringify({ estado: 'cancelada' })
+        });
+      } catch(e) {}
+    }
+
     res.status(200).json({ texto: textoLimpio, accion });
   } catch(e) {
     console.error(e);
-    res.status(500).json({ texto: 'Error de conexión. Intentá de nuevo en un momento.' });
+    res.status(500).json({ texto: 'Error de conexión. Intentá de nuevo.' });
   }
 }
