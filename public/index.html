@@ -389,12 +389,16 @@ let eventosDB = [];
 let sponsorsDB = [];
 
 async function cargarDatos(){
+  // Cargar eventos desde admin (localStorage) primero
   try{
-    const r1 = await fetch('/api/supabase?tabla=eventos');
-    const d1 = await r1.json();
-    if(Array.isArray(d1)) eventosDB = d1.filter(e=>e.activo);
-  }catch(e){ console.error('Error eventos:', e); }
+    const adminCfg = JSON.parse(localStorage.getItem('lablonda_admin_v1')||'{}');
+    if(adminCfg.eventos && adminCfg.eventos.length > 0){
+      eventosDB = adminCfg.eventos.filter(e=>e.activo);
+      console.log('Eventos desde admin localStorage:', eventosDB.length);
+    }
+  }catch(e){}
   
+  // Cargar sponsors desde /api/supabase
   try{
     const r2 = await fetch('/api/supabase?tabla=sponsors');
     const d2 = await r2.json();
