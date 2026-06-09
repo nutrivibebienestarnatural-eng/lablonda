@@ -4,37 +4,26 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#B8700F">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="La Blonda">
-<link rel="manifest" href="/manifest.json">
-<title>La Blonda — Reservas</title>
+<title>La Blonda — Panel</title>
 <style>
-:root{
-  --bg:#F7F5F0;--surf:#fff;--surf2:#F1EDE4;--bdr:#E2DDD4;--bdr2:#CCC7BC;
-  --tx:#1C1B18;--tx2:#6B6760;--tx3:#9E9B94;
-  --amb:#B8700F;--amb-bg:#FDF3E3;--amb-dk:#7A4800;
-  --grn:#2D6A0F;--grn-bg:#EBF4E4;--red:#B02020;--red-bg:#FDEAEA;
-  --r:10px;--rsm:6px;
-}
+:root{--bg:#F7F5F0;--surf:#fff;--surf2:#F1EDE4;--bdr:#E2DDD4;--bdr2:#CCC7BC;--tx:#1C1B18;--tx2:#6B6760;--tx3:#9E9B94;--amb:#B8700F;--amb-bg:#FDF3E3;--amb-dk:#7A4800;--grn:#2D6A0F;--grn-bg:#EBF4E4;--red:#B02020;--red-bg:#FDEAEA;--r:10px;--rsm:6px}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;font-size:14px}
-.topbar{background:var(--surf);border-bottom:1px solid var(--bdr);padding:0 1.25rem;display:flex;align-items:center;gap:8px;height:54px;position:sticky;top:0;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,.05)}
-.logo{font-size:18px;font-weight:700;color:var(--amb-dk);flex:1;letter-spacing:-.3px}
+.topbar{background:var(--surf);border-bottom:1px solid var(--bdr);padding:0 1.25rem;display:flex;align-items:center;gap:8px;height:54px;position:sticky;top:0;z-index:100}
+.logo{font-size:17px;font-weight:700;color:var(--amb-dk);flex:1}
 .logo em{color:var(--amb);font-style:normal}
 .nav{display:flex;gap:2px;background:var(--surf2);border-radius:8px;padding:3px}
-.nb{padding:6px 12px;border:none;background:none;cursor:pointer;font-size:12px;color:var(--tx2);border-radius:6px;font-weight:500;transition:all .15s;white-space:nowrap}
+.nb{padding:6px 12px;border:none;background:none;cursor:pointer;font-size:12px;color:var(--tx2);border-radius:6px;font-weight:500;white-space:nowrap;transition:all .15s}
 .nb.active{background:var(--surf);color:var(--tx);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.btn-sync{background:var(--grn-bg);border:1px solid var(--grn);color:var(--grn);padding:6px 12px;border-radius:var(--rsm);cursor:pointer;font-size:12px;font-weight:500}
+.btn-sync:hover{opacity:.85}
 .cnt{max-width:980px;margin:0 auto;padding:1.25rem}
 .pane{display:none}.pane.active{display:block}
-
-/* STATS */
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.25rem}
-.stat{background:var(--surf);border-radius:var(--r);padding:1rem;border:1px solid var(--bdr);text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.stat{background:var(--surf);border-radius:var(--r);padding:1rem;border:1px solid var(--bdr);text-align:center}
 .stat-n{font-size:24px;font-weight:700;line-height:1}
 .stat-l{font-size:10px;color:var(--tx3);margin-top:4px;text-transform:uppercase;letter-spacing:.04em}
 .sg{color:var(--grn)}.sa{color:var(--amb)}.sr{color:var(--red)}
-
-/* ALERTAS */
 .alertas{background:var(--surf);border:1px solid var(--amb-bg);border-left:3px solid var(--amb);border-radius:0 var(--r) var(--r) 0;padding:.875rem 1rem;margin-bottom:1.25rem}
 .alertas-t{font-size:12px;font-weight:700;color:var(--amb-dk);margin-bottom:.5rem}
 .alerta-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--bdr)}
@@ -44,54 +33,42 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .atxt{flex:1;font-size:12px;color:var(--tx)}
 .abtn{background:#25D366;color:#fff;border:none;padding:3px 9px;border-radius:20px;cursor:pointer;font-size:11px;font-weight:600}
 .abtn2{background:none;border:1px solid var(--bdr2);padding:3px 9px;border-radius:20px;cursor:pointer;font-size:11px}
-
-/* MESAS */
 .ley{display:flex;gap:14px;margin-bottom:1rem;flex-wrap:wrap}
 .ley-i{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--tx2)}
 .ley-d{width:8px;height:8px;border-radius:50%}
-.mesas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;margin-bottom:1.25rem}
-.mesa{background:var(--surf);border:1px solid var(--bdr);border-left:3px solid var(--bdr);border-radius:0 var(--r) var(--r) 0;padding:.75rem;cursor:pointer;text-align:center;transition:all .15s;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.mesas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:8px;margin-bottom:1.25rem}
+.mesa{background:var(--surf);border:1px solid var(--bdr);border-left:3px solid var(--bdr);border-radius:0 var(--r) var(--r) 0;padding:.75rem;cursor:pointer;text-align:center;transition:all .15s}
 .mesa:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.08)}
-.mesa.libre{border-left-color:var(--grn)}.mesa.reservada{border-left-color:var(--amb)}.mesa.ocupada{border-left-color:var(--red)}.mesa.bloqueada{border-left-color:var(--tx3);opacity:.55}
+.mesa.libre{border-left-color:var(--grn)}.mesa.reservada{border-left-color:var(--amb)}.mesa.ocupada{border-left-color:var(--red)}.mesa.bloqueada{border-left-color:var(--tx3);opacity:.6}
 .mesa-n{font-size:16px;font-weight:700}
 .mesa-e{font-size:9px;margin-top:2px;text-transform:uppercase;letter-spacing:.05em;font-weight:600}
 .mesa.libre .mesa-e{color:var(--grn)}.mesa.reservada .mesa-e{color:var(--amb)}.mesa.ocupada .mesa-e{color:var(--red)}.mesa.bloqueada .mesa-e{color:var(--tx3)}
 .mesa-cap{font-size:9px;color:var(--tx3);margin-top:2px}
 .mesa-q{font-size:10px;color:var(--tx3);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-
-/* CARD & FORM */
-.card{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:1.25rem;margin-bottom:1rem;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.card{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:1.25rem;margin-bottom:1rem}
 .card-t{font-size:15px;font-weight:600;margin-bottom:1rem;display:flex;align-items:center;gap:8px}
 .frow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
 .fg{display:flex;flex-direction:column;gap:4px}
 .fg.full{grid-column:1/-1}
 .fg label{font-size:11px;color:var(--tx2);font-weight:500}
 .req{color:var(--red);margin-left:2px}
-.fg input,.fg select,.fg textarea{width:100%;padding:9px 11px;border:1px solid var(--bdr);border-radius:var(--rsm);font-size:13px;color:var(--tx);background:var(--surf);font-family:inherit;transition:border-color .15s}
-.fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:var(--amb);box-shadow:0 0 0 3px rgba(184,112,15,.07)}
-.fg input.err,.fg select.err{border-color:var(--red)}
+.fg input,.fg select,.fg textarea{width:100%;padding:9px 11px;border:1px solid var(--bdr);border-radius:var(--rsm);font-size:13px;color:var(--tx);background:var(--surf);font-family:inherit}
+.fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:var(--amb)}
+.fg input.err{border-color:var(--red)}
 .fg textarea{resize:none;height:48px}
-
-/* BOTONES */
-.btn-main{background:var(--tx);color:#fff;border:none;padding:10px 20px;border-radius:var(--rsm);cursor:pointer;font-size:14px;font-weight:600;transition:opacity .15s}
+.btn-main{background:var(--tx);color:#fff;border:none;padding:10px 20px;border-radius:var(--rsm);cursor:pointer;font-size:14px;font-weight:600}
 .btn-main:hover{opacity:.85}
-.btn-wa{background:#25D366;color:#fff;border:none;padding:8px 14px;border-radius:var(--rsm);cursor:pointer;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.btn-wa{background:#25D366;color:#fff;border:none;padding:7px 12px;border-radius:var(--rsm);cursor:pointer;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:5px}
 .btn-wa:hover{opacity:.88}
-.btn-copy{background:none;border:1px solid var(--bdr2);padding:8px 14px;border-radius:var(--rsm);cursor:pointer;font-size:12px;color:var(--tx);display:inline-flex;align-items:center;gap:5px}
-.btn-copy:hover{background:var(--surf2)}
-.bsm{border:1px solid var(--bdr);background:none;color:var(--tx2);padding:4px 9px;border-radius:var(--rsm);cursor:pointer;font-size:11px}
-.bsm:hover{background:var(--surf2)}
-.bok{border:1px solid var(--grn);background:none;color:var(--grn);padding:4px 9px;border-radius:var(--rsm);cursor:pointer;font-size:11px}
-.bocu{border:1px solid var(--amb);background:none;color:var(--amb);padding:4px 9px;border-radius:var(--rsm);cursor:pointer;font-size:11px}
-.bdel{border:1px solid var(--red);background:none;color:var(--red);padding:4px 9px;border-radius:var(--rsm);cursor:pointer;font-size:11px}
-.bprm{border:1px solid var(--amb);background:var(--amb-bg);color:var(--amb-dk);padding:4px 9px;border-radius:var(--rsm);cursor:pointer;font-size:11px;font-weight:700}
-
-/* MSG */
+.btn-copy{background:none;border:1px solid var(--bdr2);padding:7px 12px;border-radius:var(--rsm);cursor:pointer;font-size:12px;color:var(--tx);display:inline-flex;align-items:center;gap:4px}
+.bsm{border:1px solid var(--bdr);background:none;color:var(--tx2);padding:4px 8px;border-radius:var(--rsm);cursor:pointer;font-size:11px}
+.bok{border:1px solid var(--grn);background:none;color:var(--grn);padding:4px 8px;border-radius:var(--rsm);cursor:pointer;font-size:11px}
+.bocu{border:1px solid var(--amb);background:none;color:var(--amb);padding:4px 8px;border-radius:var(--rsm);cursor:pointer;font-size:11px}
+.bdel{border:1px solid var(--red);background:none;color:var(--red);padding:4px 8px;border-radius:var(--rsm);cursor:pointer;font-size:11px}
+.bprm{border:1px solid var(--amb);background:var(--amb-bg);color:var(--amb-dk);padding:4px 8px;border-radius:var(--rsm);cursor:pointer;font-size:11px;font-weight:700}
 .msg-box{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:1.25rem;margin-top:.875rem}
 .msg-prev{background:var(--surf2);border-left:3px solid #25D366;border-radius:0 var(--rsm) var(--rsm) 0;padding:.875rem;font-size:13px;line-height:1.75;white-space:pre-wrap;font-family:inherit;margin-bottom:10px}
 .msg-acts{display:flex;gap:8px;flex-wrap:wrap}
-
-/* LISTA */
 .search{position:relative;margin-bottom:.875rem}
 .search input{width:100%;padding:9px 11px 9px 34px;border:1px solid var(--bdr);border-radius:var(--rsm);font-size:13px;background:var(--surf);color:var(--tx)}
 .search input:focus{outline:none;border-color:var(--amb)}
@@ -99,24 +76,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .subtabs{display:flex;border-bottom:1px solid var(--bdr);margin-bottom:1rem}
 .stab{padding:7px 14px;border:none;background:none;cursor:pointer;font-size:12px;color:var(--tx2);border-bottom:2px solid transparent;margin-bottom:-1px;font-weight:500}
 .stab.active{color:var(--amb);border-bottom-color:var(--amb)}
-.res-item{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:.875rem 1rem;margin-bottom:7px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.res-item{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:.875rem 1rem;margin-bottom:8px}
 .res-top{display:flex;align-items:flex-start;gap:9px;margin-bottom:8px}
 .res-av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0}
-.av-r{background:var(--amb-bg);color:var(--amb-dk)}.av-o{background:var(--red-bg,#FDEAEA);color:#7A1A1A}
+.av-r{background:var(--amb-bg);color:var(--amb-dk)}.av-o{background:#FDEAEA;color:#7A1A1A}
 .res-nom{font-weight:600;font-size:13px;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
 .res-sub{font-size:11px;color:var(--tx2);margin-top:2px;display:flex;gap:8px;flex-wrap:wrap}
-.res-acts{display:flex;gap:5px;flex-wrap:wrap}
+.res-acts{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
 .badge{display:inline-block;padding:1px 7px;border-radius:20px;font-size:10px;font-weight:700}
 .b-r{background:var(--amb-bg);color:var(--amb-dk)}.b-o{background:#FDEAEA;color:#7A1A1A}
-
-/* MOV */
+.nueva-badge{background:var(--grn-bg);color:var(--grn);font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px;margin-left:6px}
 .mov-item{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid var(--bdr)}
 .mov-item:last-child{border:none}
 .mov-ic{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;background:var(--surf2)}
 .mov-desc{font-size:12px;font-weight:500;color:var(--tx)}
 .mov-meta{font-size:11px;color:var(--tx3);margin-top:1px}
-
-/* INFORME */
 .rep-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1rem}
 .rep-card{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:.875rem}
 .rep-t{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--tx3);margin-bottom:.625rem}
@@ -130,102 +104,48 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .comp-trk{flex:1;height:14px;background:var(--surf2);border-radius:2px;overflow:hidden}
 .comp-f{height:100%;border-radius:2px;background:var(--amb)}
 .comp-v{font-size:10px;font-weight:600;color:var(--tx2);min-width:18px;text-align:right}
-
-/* CHAT */
-.chat-wrap{display:flex;flex-direction:column;height:calc(100vh - 110px);max-width:700px;margin:0 auto}
-.chat-hdr{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r) var(--r) 0 0;padding:1rem 1.25rem;display:flex;align-items:center;gap:10px}
-.chat-av{width:42px;height:42px;background:var(--amb-bg);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-.chat-name{font-weight:700;font-size:15px;color:var(--tx)}
-.chat-st{font-size:12px;color:var(--grn);margin-top:1px}
-.chat-msgs{flex:1;background:var(--surf2);border:1px solid var(--bdr);border-top:none;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:10px}
-.burbuja{max-width:82%;padding:.75rem 1rem;border-radius:12px;font-size:14px;line-height:1.6;word-wrap:break-word;white-space:pre-wrap}
-.bot{background:var(--surf);border:1px solid var(--bdr);color:var(--tx);align-self:flex-start;border-radius:4px 12px 12px 12px}
-.usr{background:var(--amb);color:#fff;align-self:flex-end;border-radius:12px 4px 12px 12px}
-.bot-nm{font-size:10px;color:var(--tx3);font-weight:700;margin-bottom:4px}
-.typing{display:flex;gap:4px;align-items:center;padding:.5rem .625rem}
-.dot{width:7px;height:7px;background:var(--tx3);border-radius:50%;animation:bounce .8s infinite}
-.dot:nth-child(2){animation-delay:.15s}.dot:nth-child(3){animation-delay:.3s}
-.chat-inp-area{background:var(--surf);border:1px solid var(--bdr);border-top:none;border-radius:0 0 var(--r) var(--r);padding:.875rem;display:flex;gap:8px}
-.chat-inp{flex:1;border:1px solid var(--bdr);border-radius:20px;padding:9px 14px;font-size:13px;font-family:inherit;resize:none;color:var(--tx)}
-.chat-inp:focus{outline:none;border-color:var(--amb)}
-.btn-send{background:var(--amb);color:#fff;border:none;width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;align-self:flex-end}
-.btn-send:hover{background:var(--amb-dk)}
-.confirm-card{background:var(--grn-bg);border:1px solid var(--grn);border-radius:var(--rsm);padding:.875rem;margin-top:.625rem}
-.confirm-t{font-size:13px;font-weight:700;color:var(--grn);margin-bottom:.375rem}
-.confirm-d{font-size:12px;color:#1C3A10;line-height:1.6}
-.btn-wa-confirm{background:#25D366;color:#fff;border:none;padding:8px 14px;border-radius:var(--rsm);cursor:pointer;font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:5px;margin-top:.625rem;width:100%;justify-content:center}
-
-/* POPUP */
-.popup-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:flex-end;justify-content:center;padding:1rem}
-.popup-overlay.open{display:flex;animation:fadeUp .3s ease}
-.popup{background:var(--surf);border-radius:18px 18px 12px 12px;width:100%;max-width:460px;overflow:hidden;box-shadow:0 -4px 40px rgba(0,0,0,.2)}
-.popup-img{height:160px;background:linear-gradient(135deg,var(--amb-dk),var(--amb));display:flex;align-items:center;justify-content:center;font-size:60px;position:relative;overflow:hidden}
-.popup-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.popup-body{padding:1.25rem}
-.popup-badge{display:inline-block;background:var(--amb-bg);color:var(--amb-dk);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:2px 9px;border-radius:20px;margin-bottom:6px}
-.popup-title{font-size:18px;font-weight:700;color:var(--tx);margin-bottom:4px}
-.popup-desc{font-size:13px;color:var(--tx2);line-height:1.55;margin-bottom:.875rem}
-.popup-meta{font-size:12px;color:var(--tx3);margin-bottom:.875rem}
-.popup-footer{display:flex;gap:7px}
-.popup-btn{flex:1;background:var(--amb);color:#fff;border:none;padding:11px;border-radius:var(--rsm);cursor:pointer;font-size:14px;font-weight:700}
-.popup-btn:hover{background:var(--amb-dk)}
-.popup-cls{background:none;border:1px solid var(--bdr2);padding:11px 14px;border-radius:var(--rsm);cursor:pointer;font-size:14px;color:var(--tx2)}
-
-/* PWA */
-.pwa-bar{display:none;align-items:center;gap:8px;background:var(--amb-bg);border:1px solid var(--amb);border-radius:var(--r);padding:.75rem 1rem;margin-bottom:1rem}
-.pwa-bar.show{display:flex}
-.pwa-txt{flex:1;font-size:12px;color:var(--amb-dk);font-weight:500}
-.pwa-txt small{display:block;font-size:10px;color:var(--amb);font-weight:400;margin-top:1px}
-.pwa-btn{background:var(--amb);color:#fff;border:none;padding:6px 12px;border-radius:var(--rsm);cursor:pointer;font-size:12px;font-weight:600}
-.pwa-cls{background:none;border:none;cursor:pointer;color:var(--tx3);font-size:18px;padding:0 4px}
-
-/* MODAL */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:150;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(3px)}
 .modal-overlay.open{display:flex}
 .modal{background:var(--surf);border-radius:14px;padding:1.5rem;width:100%;max-width:500px;max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)}
 .modal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.modal-hdr h3{font-size:16px;font-weight:700;color:var(--tx)}
+.modal-hdr h3{font-size:16px;font-weight:700}
 .modal-cls{background:none;border:none;font-size:20px;cursor:pointer;color:var(--tx3);padding:2px 6px;border-radius:4px}
 .modal-cls:hover{background:var(--surf2)}
 .modal-info{font-size:13px;color:var(--tx2);line-height:1.8;background:var(--surf2);border-radius:var(--rsm);padding:.875rem;margin-bottom:12px}
 .modal-sep{height:1px;background:var(--bdr);margin:12px 0}
 .modal-mlbl{font-size:10px;color:var(--tx3);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin:9px 0 4px}
 .modal-acts{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
-
-/* TOAST */
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--tx);color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:500;opacity:0;transition:opacity .3s;pointer-events:none;z-index:400;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.2)}
+.pwa-bar{display:none;align-items:center;gap:8px;background:var(--amb-bg);border:1px solid var(--amb);border-radius:var(--r);padding:.75rem 1rem;margin-bottom:1rem}
+.pwa-bar.show{display:flex}
+.pwa-txt{flex:1;font-size:12px;color:var(--amb-dk);font-weight:500}
+.pwa-txt small{display:block;font-size:10px;color:var(--amb);font-weight:400;margin-top:1px}
+.pwa-btn{background:var(--amb);color:#fff;border:none;padding:6px 12px;border-radius:var(--rsm);cursor:pointer;font-size:12px;font-weight:600}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--tx);color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:500;opacity:0;transition:opacity .3s;pointer-events:none;z-index:400;white-space:nowrap}
 .toast.show{opacity:1}
-
-@keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
-@media(max-width:600px){
-  .stats{grid-template-columns:1fr 1fr}
-  .frow{grid-template-columns:1fr}
-  .rep-grid{grid-template-columns:1fr}
-  .nb{padding:5px 9px;font-size:11px}
-}
+.notif-dot{width:8px;height:8px;background:var(--red);border-radius:50%;display:inline-block;margin-left:4px;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@media(max-width:600px){.stats{grid-template-columns:1fr 1fr}.frow{grid-template-columns:1fr}.rep-grid{grid-template-columns:1fr}.nb{padding:5px 8px;font-size:11px}}
 </style>
 </head>
 <body>
 
 <div class="topbar">
   <div class="logo">La <em>Blonda</em></div>
-  <button style="background:var(--grn-bg);border:1px solid var(--grn);color:var(--grn);padding:5px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:500;margin-right:6px" onclick="syncReservasDesdeSupabase()">↻ Sync</button>
   <nav class="nav">
     <button class="nb active" onclick="tab('mesas')">🍺 Mesas</button>
     <button class="nb" onclick="tab('nueva')">+ Nueva</button>
-    <button class="nb" onclick="tab('lista')">≡ Reservas</button>
+    <button class="nb" id="nb-lista" onclick="tab('lista')">≡ Reservas</button>
     <button class="nb" onclick="tab('informe')">📊 Informe</button>
-    <button class="nb" onclick="tab('chat')">💬 Reservar</button>
   </nav>
+  <button class="btn-sync" onclick="sincronizar()">↻ Sync</button>
 </div>
 
 <div class="cnt">
 <div class="pwa-bar" id="pwa-bar">
-  <div style="font-size:22px">📲</div>
+  <div style="font-size:20px">📲</div>
   <div class="pwa-txt">Instalá La Blonda en tu celular<small>Acceso directo sin abrir el navegador</small></div>
   <button class="pwa-btn" onclick="instalarPWA()">Instalar</button>
-  <button class="pwa-cls" onclick="this.parentElement.classList.remove('show')">✕</button>
+  <button style="background:none;border:none;cursor:pointer;color:var(--amb-dk);font-size:18px;padding:0 4px" onclick="this.parentElement.classList.remove('show')">✕</button>
 </div>
 
 <!-- MESAS -->
@@ -265,16 +185,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
   <div id="bloque-msg" style="display:none">
     <div class="msg-box">
-      <div style="font-size:13px;font-weight:600;color:#25D366;margin-bottom:.75rem">💬 Mensaje de confirmación listo</div>
+      <div style="font-size:13px;font-weight:600;color:#25D366;margin-bottom:.75rem">💬 Mensajes listos para enviar</div>
+      <div style="font-size:11px;color:var(--tx3);margin-bottom:.5rem">CONFIRMACIÓN AL CLIENTE</div>
       <div class="msg-prev" id="msg-texto"></div>
       <div id="derecho-msg-wrap" style="display:none">
-        <div style="font-size:13px;font-weight:600;color:var(--amb-dk);margin:.75rem 0 .5rem">💰 Mensaje de derecho de reserva</div>
+        <div style="font-size:11px;color:var(--tx3);margin:.75rem 0 .5rem">DERECHO DE RESERVA</div>
         <div class="msg-prev" id="derecho-texto" style="border-left-color:var(--amb)"></div>
       </div>
       <div class="msg-acts">
         <button class="btn-wa" id="btn-wa-conf">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.117.554 4.1 1.523 5.82L.057 23.272a.75.75 0 0 0 .916.924l5.635-1.478A11.952 11.952 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.87 0-3.628-.507-5.147-1.391l-.369-.218-3.818 1.002 1.017-3.712-.24-.38A9.961 9.961 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
-          WhatsApp Web
+          Enviar al cliente
         </button>
         <button class="btn-copy" onclick="copiar()">⧉ Copiar</button>
       </div>
@@ -297,21 +218,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <!-- INFORME -->
 <div id="pane-informe" class="pane"><div id="inf-cont"></div></div>
-
-<!-- CHAT -->
-<div id="pane-chat" class="pane">
-  <div class="chat-wrap">
-    <div class="chat-hdr">
-      <div class="chat-av">🍺</div>
-      <div><div class="chat-name" id="chat-bar-name">La Blonda</div><div class="chat-st">● En línea — Reservá ahora</div></div>
-    </div>
-    <div class="chat-msgs" id="chat-msgs"></div>
-    <div class="chat-inp-area">
-      <textarea class="chat-inp" id="chat-inp" placeholder="Escribí tu consulta..." rows="1" onkeydown="chatKey(event)"></textarea>
-      <button class="btn-send" onclick="chatEnviar()">➤</button>
-    </div>
-  </div>
-</div>
 </div>
 
 <!-- MODAL -->
@@ -325,87 +231,102 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 </div>
 
-<!-- POPUP EVENTO -->
-<div id="popup-overlay" class="popup-overlay" onclick="if(event.target===this)cerrarPopup()">
-  <div class="popup">
-    <div class="popup-img" id="p-img"><div id="p-emoji" style="position:relative;z-index:1">🎭</div></div>
-    <div class="popup-body">
-      <div class="popup-badge" id="p-badge">Evento</div>
-      <div class="popup-title" id="p-title">Título</div>
-      <div class="popup-desc" id="p-desc">Descripción</div>
-      <div class="popup-meta" id="p-meta"></div>
-      <div class="popup-footer">
-        <button class="popup-btn" onclick="popupReservar()">🍺 Reservar para este evento</button>
-        <button class="popup-cls" onclick="cerrarPopup()">Cerrar</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 <div id="toast" class="toast"></div>
 
 <script>
+// ── CONFIG ──
 const KEY_CFG='lablonda_admin_v1', KEY_RES='lablonda_v3';
 let cfg={}, reservas=[], historial=[], movimientos=[], mesasBloq=new Set();
-let nid=1, midx=1, msgActual='', telActual='', vistaLista='hoy', chatHist=[];
-let deferredPrompt=null, popupEvento=null, editandoId=null;
+let nid=1, midx=1, msgActual='', telActual='', vistaLista='hoy';
+let deferredPrompt=null, mensajesCfg={};
+let nuevasReservas=0;
 
-// ── CARGA ──
-function cargarCfg(){
-  try{ cfg=JSON.parse(localStorage.getItem(KEY_CFG)||'{}'); }catch(e){}
-}
-function cargarReservas(){
+// ── CARGAR ──
+function cargarCfg(){ try{ cfg=JSON.parse(localStorage.getItem(KEY_CFG)||'{}'); }catch(e){} }
+function cargarLocal(){
   try{
     const d=JSON.parse(localStorage.getItem(KEY_RES)||'{}');
     reservas=d.reservas||[]; historial=d.historial||[]; movimientos=d.movimientos||[];
     nid=d.nid||1; midx=d.midx||1; mesasBloq=new Set(d.bloq||[]);
   }catch(e){}
 }
-function guardar(){
+function guardarLocal(){
   localStorage.setItem(KEY_RES,JSON.stringify({reservas,historial,movimientos,nid,midx,bloq:[...mesasBloq]}));
 }
 
-// ── MESAS DESDE CONFIG ──
-function getMesas(){ return cfg.mesas||[{num:1,cap:4},{num:2,cap:4},{num:3,cap:4},{num:4,cap:4},{num:5,cap:4},{num:6,cap:4},{num:7,cap:6},{num:8,cap:6},{num:9,cap:2},{num:10,cap:8}]; }
-function getBarNombre(){ return cfg.bar?.nombre||'La Blonda'; }
+// ── SUPABASE ──
+async function sbGet(tabla){
+  try{ const r=await fetch('/api/supabase?tabla='+tabla); const d=await r.json(); return Array.isArray(d)?d:[]; }
+  catch(e){ return []; }
+}
+async function sbPost(body){
+  try{ const r=await fetch('/api/supabase',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); return await r.json(); }
+  catch(e){ return null; }
+}
 
-// ── MOVIMIENTOS ──
-const MICONS={nueva:'🆕',sentar:'🪑',liberar:'🔓',cancelar:'❌',editar:'✏️',bloquear:'🔒',desbloquear:'🔓',premio:'🏆'};
-const MLBLS={nueva:'Nueva reserva',sentar:'Cliente sentado',liberar:'Mesa liberada',cancelar:'Reserva cancelada',editar:'Reserva editada',bloquear:'Mesa bloqueada',desbloquear:'Mesa desbloqueada',premio:'Premio La Palabra enviado'};
-function logMov(tipo,r,op,extra){
-  const n=new Date();
-  movimientos.push({id:midx++,tipo,nombre:r?.nombre,mesa:r?.mesa,operador:op||'Sistema',
-    hora:n.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'}),
-    fecha:n.toLocaleDateString('es-AR'),extra:extra||''});
+// ── SINCRONIZAR DESDE SUPABASE ──
+async function sincronizar(){
+  showToast('⏳ Sincronizando...');
+  const [sbReservas, sbMensajes] = await Promise.all([sbGet('reservas'), sbGet('mensajes')]);
+
+  // Mensajes configurados
+  if(sbMensajes.length){
+    mensajesCfg={};
+    sbMensajes.forEach(m=>{ mensajesCfg[m.clave]=m.valor; });
+  }
+
+  // Reservas nuevas desde Supabase que no están en local
+  let nuevas=0;
+  sbReservas.forEach(sb=>{
+    const existe=reservas.find(r=>String(r.id)===String(sb.id));
+    if(!existe){
+      reservas.push({
+        id:sb.id, nombre:sb.nombre||'', tel:sb.telefono||'',
+        fecha:sb.fecha||'', hora:sb.hora||'',
+        mesa:sb.mesa||1, pax:sb.personas||1,
+        operador:sb.operador||'Chat web',
+        notas:sb.notas||'', estado:sb.estado||'reservada',
+        esNueva:true
+      });
+      nuevas++;
+    } else {
+      // Actualizar estado si cambió
+      existe.estado=sb.estado||existe.estado;
+    }
+  });
+
+  guardarLocal();
+  if(nuevas>0){
+    nuevasReservas=nuevas;
+    showToast('✓ '+nuevas+' reserva'+(nuevas>1?'s':'')+' nueva'+(nuevas>1?'s':'')+' sincronizada'+(nuevas>1?'s':''));
+    document.getElementById('nb-lista').innerHTML='≡ Reservas <span class="notif-dot"></span>';
+  } else {
+    showToast('✓ Todo sincronizado');
+  }
+  renderMesas(); renderLista();
 }
 
 // ── MENSAJES ──
-function buildMsg(tipo, r){
-  const BAR=getBarNombre();
-  const msgs={
-    confirmacion:`¡Hola, ${r.nombre}! 🎉\n\n¡Tu reserva en *${BAR}* está confirmada! Ya guardamos tu lugar con todo el cariño. 🙌\n\n📅 *${fmt(r.fecha)}*\n🕐 *${r.hora} hs*\n🪑 Mesa *${r.mesa}* para *${r.pax}* personas\n\nLlegá tranquilo, que acá te esperamos con la mejor onda. 🍺✨\n\nSi algo cambia, avisanos con anticipación.\n\n¡Nos vemos en *${BAR}*! 🔥`,
-    recordatorio:`¡Eyyy, ${r.nombre}! 👋😄\n\n¡Esta noche es la noche! Te esperamos en *${BAR}* a las *${r.hora} hs*, Mesa *${r.mesa}*.\n\nAndá preparándote que la noche se viene con todo. 🍺🔥\n\nCualquier cambio de último momento, avisanos. ¡Hasta ahora! 🎶`,
-    mesa_lista:`¡${r.nombre}, es tu momento! 🙌🔥\n\nTu mesa en *${BAR}* ya está lista y te está esperando. ¡Vení cuando quieras!\n\n¡Te esperamos! 🍺✨`,
-    cancelacion:`Hola, ${r.nombre} 👋\n\nLamentamos informarte que tu reserva del *${fmt(r.fecha)}* a las *${r.hora} hs* en *${BAR}* fue cancelada.\n\nCuando quieras volvé a reservar, acá estamos con los brazos abiertos. 🍺`,
-    premio:`¡Hola, ${r.nombre}! 👋🎉\n\nReservaste para *${r.pax} personas* y vinieron *${r.pax}*. ¡Eso se llama tener palabra! 🤝\n\nEn *${BAR}* eso se premia:\n\n🍺 *Una cerveza de la casa, para compartir con los que más querés.*\n\nDecíselo al encargado y listo. 😄\n\n¡Disfruten la noche juntos! 🔥🎶`,
-  };
-  return msgs[tipo]||'';
+function getMensaje(tipo, r){
+  const BAR=cfg.bar?.nombre||'La Blonda';
+  const base = mensajesCfg[tipo] || MSGS_DEFAULT[tipo];
+  if(!base) return '';
+  const[y,m,d]=(r.fecha||'').split('-');
+  return base
+    .replace(/{nombre}/g,r.nombre||'').replace(/{bar}/g,BAR)
+    .replace(/{fecha}/g,`${d||'?'}/${m||'?'}/${y||'?'}`)
+    .replace(/{hora}/g,r.hora||'').replace(/{mesa}/g,r.mesa||'')
+    .replace(/{pax}/g,r.pax||'')
+    .replace(/{evento}/g,r.notas?'\n🎭 '+r.notas:'');
 }
-function buildDerechoMsg(r){
-  const d=cfg.derecho||{};
-  if(!d.activo||!r.pax||r.pax<(d.desde||5)) return '';
-  const monto=d.tipo==='por_persona'
-    ? Math.min(r.pax*d.monto, d.maximo>0?d.maximo:Infinity)
-    : d.monto;
-  return (d.mensaje||'')
-    .replace(/{nombre}/g,r.nombre)
-    .replace(/{personas}/g,r.pax)
-    .replace(/{monto}/g,'$'+Number(monto).toLocaleString('es-AR'))
-    .replace(/{desde}/g,d.desde||5)
-    .replace(/{alias}/g,d.alias||'—')
-    .replace(/{cbu}/g,d.cbu||'—')
-    .replace(/{titular}/g,d.titular||'—');
-}
+
+const MSGS_DEFAULT = {
+  confirmacion:'¡Hola, {nombre}! 🎉\n\n¡Tu reserva en *{bar}* está confirmada!\n\n📅 *{fecha}*\n🕐 *{hora} hs*\n🪑 Mesa *{mesa}* para *{pax}* personas{evento}\n\nLlegá tranquilo, acá te esperamos. 🍺✨\n\n¡Nos vemos en *{bar}*! 🔥',
+  recordatorio:'¡Eyyy, {nombre}! 👋\n\nEsta noche en *{bar}*, Mesa *{mesa}* a las *{hora} hs*. 🍺🔥\n\n¡Hasta ahora! 🎶',
+  mesa_lista:'¡{nombre}, tu mesa en *{bar}* está lista! 🙌 ¡Vení cuando quieras! 🍺✨',
+  cancelacion:'Hola {nombre} 👋\n\nTu reserva del *{fecha}* a las *{hora} hs* en *{bar}* fue cancelada.\n\nCuando quieras, acá estamos. 🍺',
+  premio:'¡Hola, {nombre}! 👋🎉\n\nVinieron todos y eso se llama tener palabra. 🤝\n\n🍺 *Una cerveza de la casa para compartir con los que más querés.*\n\nDecíselo al encargado. 😄\n\n¡Disfruten! 🔥🎶',
+};
 
 const MSG_LBL={confirmacion:'✅ Confirmación',recordatorio:'🔔 Recordatorio',mesa_lista:'🪑 Mesa lista',cancelacion:'❌ Cancelación',premio:'🏆 La Palabra'};
 
@@ -416,32 +337,17 @@ function esHoy(f){return f===hoy();}
 function waUrl(tel,msg){const t=(tel||'').replace(/\D/g,'');const n=t.startsWith('54')?t:'54'+t;return 'https://wa.me/'+n+'?text='+encodeURIComponent(msg);}
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 function copiarTexto(txt){if(navigator.clipboard)navigator.clipboard.writeText(txt).then(()=>showToast('Copiado ✓'));}
-function enviarWA(tel,msg){if(tel)window.open(waUrl(tel,msg));else{copiarTexto(msg);showToast('Sin tel — mensaje copiado');}}
+function enviarWA(tel,msg){if(tel)window.open(waUrl(tel,msg));else{copiarTexto(msg);showToast('Sin tel — copiado');}}
 
-// ── FORM INIT ──
-function initForm(){
-  const mesas=getMesas();
-  const sel=document.getElementById('f-mesa');
-  sel.innerHTML='';
-  mesas.forEach(m=>{const o=document.createElement('option');o.value=m.num;o.textContent=`Mesa ${m.num} (hasta ${m.cap} pers.)`;sel.appendChild(o);});
-  document.getElementById('f-fecha').value=hoy();
-  document.getElementById('chat-bar-name').textContent=getBarNombre();
-}
-
-// ── ESTADO MESA ──
+// ── MESAS ──
+function getMesas(){ return cfg.mesas||[{num:1,cap:4},{num:2,cap:4},{num:3,cap:4},{num:4,cap:4},{num:5,cap:4},{num:6,cap:4},{num:7,cap:6},{num:8,cap:6},{num:9,cap:2},{num:10,cap:8}]; }
 function estadoMesa(n){
   if(mesasBloq.has(n))return{e:'bloqueada',r:null};
   const ocu=reservas.find(r=>r.mesa===n&&r.estado==='ocupada');if(ocu)return{e:'ocupada',r:ocu};
   const res=reservas.find(r=>r.mesa===n&&r.estado==='reservada');if(res)return{e:'reservada',r:res};
   return{e:'libre',r:null};
 }
-function sugerirMesa(pax){
-  const mesas=getMesas().filter(m=>!mesasBloq.has(m.num)&&estadoMesa(m.num).e==='libre');
-  const ideal=mesas.filter(m=>m.cap>=pax).sort((a,b)=>a.cap-b.cap)[0];
-  return ideal?.num||null;
-}
 
-// ── STATS ──
 function renderStats(el){
   const mesas=getMesas();
   const libre=mesas.filter(m=>estadoMesa(m.num).e==='libre').length;
@@ -452,7 +358,6 @@ function renderStats(el){
     <div class="stat"><div class="stat-n">${reservas.length}</div><div class="stat-l">Total</div></div>`;
 }
 
-// ── ALERTAS ──
 function renderAlertas(){
   const wrap=document.getElementById('alertas-wrap');
   const ahora=new Date();
@@ -463,16 +368,16 @@ function renderAlertas(){
     const[h2,mm]=(r.hora||'00:00').split(':').map(Number);
     const min=h2*60+mm, diff=min-hh;
     if(diff<=120&&diff>0) alertas.push({urg:diff<=30?'au':diff<=60?'ap':'ao',
-      txt:diff<=30?`⚡ ¡En ${diff} min! — ${r.nombre} (Mesa ${r.mesa}, ${r.pax} pers.) — Mandá recordatorio YA`:`📨 En ${Math.round(diff/60*10)/10}hs — ${r.nombre} (Mesa ${r.mesa}) — mandá recordatorio`,r});
-    if(diff<=0&&diff>-30) alertas.push({urg:'au',txt:`🚨 Debería haber llegado — ${r.nombre} (Mesa ${r.mesa}) — chequeá`,r});
+      txt:diff<=30?`⚡ ¡En ${diff} min! — ${r.nombre} (Mesa ${r.mesa}) — ¡Recordatorio YA!`:`📨 En ${Math.round(diff/60*10)/10}hs — ${r.nombre} (Mesa ${r.mesa}) — mandá recordatorio`,r});
+    if(diff<=0&&diff>-30) alertas.push({urg:'au',txt:`🚨 Debería haber llegado — ${r.nombre} (Mesa ${r.mesa})`,r});
   });
   if(!alertas.length){
-    wrap.innerHTML=`<div class="alertas"><div class="alertas-t">🔔 Alertas del día</div><div style="font-size:12px;color:var(--tx3)">${resHoy.length>0?`✅ Todo tranquilo — ${resHoy.length} reserva${resHoy.length>1?'s':''} para hoy, ninguna urgente`:'Sin reservas para hoy todavía'}</div></div>`;
+    wrap.innerHTML=`<div class="alertas"><div class="alertas-t">🔔 Alertas del día</div><div style="font-size:12px;color:var(--tx3)">${resHoy.length>0?`✅ Todo tranquilo — ${resHoy.length} reserva${resHoy.length>1?'s':''} para hoy`:'Sin reservas para hoy todavía'}</div></div>`;
     return;
   }
   wrap.innerHTML=`<div class="alertas"><div class="alertas-t">🔔 Alertas — ${alertas.length} pendiente${alertas.length>1?'s':''}</div>${
     alertas.map(a=>{
-      const rmsg=buildMsg('recordatorio',a.r);
+      const rmsg=getMensaje('recordatorio',a.r);
       return `<div class="alerta-row"><div class="adot ${a.urg}"></div><div class="atxt">${a.txt}</div>
         <div style="display:flex;gap:4px">
           ${a.r.tel?`<button class="abtn" onclick="window.open('${waUrl(a.r.tel,rmsg)}')">📲 WA</button>`:''}
@@ -481,7 +386,6 @@ function renderAlertas(){
     }).join('')}</div>`;
 }
 
-// ── MESAS ──
 function renderMesas(){
   renderStats(document.getElementById('stats-mesas'));
   renderAlertas();
@@ -490,23 +394,33 @@ function renderMesas(){
     const{e,r}=estadoMesa(m.num);
     const d=document.createElement('div');d.className='mesa '+e;d.onclick=()=>abrirModal(m.num);
     const labs={libre:'Libre',reservada:'Reservada',ocupada:'Ocupada',bloqueada:'Bloqueada'};
-    d.innerHTML=`<div class="mesa-n">⊞ ${m.num}</div><div class="mesa-e">${labs[e]}</div><div class="mesa-cap">${m.cap} pers. máx.</div><div class="mesa-q">${r?r.nombre:''}</div>`;
+    d.innerHTML=`<div class="mesa-n">⊞ ${m.num}</div><div class="mesa-e">${labs[e]}</div><div class="mesa-cap">${m.cap} pers.</div><div class="mesa-q">${r?r.nombre:''}</div>`;
     g.appendChild(d);
   });
 }
 
 // ── LISTA ──
+const MICONS={nueva:'🆕',sentar:'🪑',liberar:'🔓',cancelar:'❌',editar:'✏️',bloquear:'🔒',desbloquear:'🔓',premio:'🏆'};
+const MLBLS={nueva:'Nueva reserva',sentar:'Cliente sentado',liberar:'Mesa liberada',cancelar:'Reserva cancelada',editar:'Reserva editada',bloquear:'Mesa bloqueada',desbloquear:'Mesa desbloqueada',premio:'Premio La Palabra'};
+function logMov(tipo,r,op,extra){
+  const n=new Date();
+  movimientos.push({id:midx++,tipo,nombre:r?.nombre,mesa:r?.mesa,operador:op||'Sistema',
+    hora:n.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'}),
+    fecha:n.toLocaleDateString('es-AR'),extra:extra||''});
+}
+
 function subtab(v,btn){vistaLista=v;document.querySelectorAll('.stab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderLista();}
+
 function renderLista(){
   renderStats(document.getElementById('stats-lista'));
   const c=document.getElementById('lista-cont');
   const busq=(document.getElementById('buscador').value||'').toLowerCase();
   if(vistaLista==='movimientos'){
-    if(!movimientos.length){c.innerHTML='<div style="text-align:center;color:var(--tx3);padding:2rem;font-size:12px">Sin movimientos registrados</div>';return;}
+    if(!movimientos.length){c.innerHTML='<div style="text-align:center;color:var(--tx3);padding:2rem;font-size:12px">Sin movimientos</div>';return;}
     c.innerHTML=[...movimientos].reverse().filter(m=>!busq||(m.nombre+m.operador).toLowerCase().includes(busq)).map(m=>`
       <div class="mov-item"><div class="mov-ic">${MICONS[m.tipo]||'•'}</div>
       <div><div class="mov-desc">${MLBLS[m.tipo]||m.tipo}${m.nombre?' — '+m.nombre:''}${m.mesa?' (Mesa '+m.mesa+')':''}</div>
-      <div class="mov-meta">👤 ${m.operador} · 🕐 ${m.hora} · 📅 ${m.fecha}${m.extra?' · '+m.extra:''}</div></div></div>`).join('');
+      <div class="mov-meta">👤 ${m.operador} · 🕐 ${m.hora} · 📅 ${m.fecha}</div></div></div>`).join('');
     return;
   }
   if(vistaLista==='historial'){
@@ -526,24 +440,47 @@ function renderLista(){
   c.innerHTML=lista.map(r=>{
     const av=r.estado==='ocupada'?'av-o':'av-r';
     const badge=r.estado==='ocupada'?'<span class="badge b-o">Ocupada</span>':'<span class="badge b-r">Reservada</span>';
-    return `<div class="res-item"><div class="res-top">
-      <div class="res-av ${av}">${r.nombre.substring(0,2).toUpperCase()}</div>
-      <div style="flex:1;min-width:0"><div class="res-nom">${r.nombre}${badge}</div>
-      <div class="res-sub"><span>🪑 Mesa ${r.mesa}</span><span>👥 ${r.pax}</span><span>📅 ${fmt(r.fecha)} ${r.hora}</span>${r.tel?`<span>📱 ${r.tel}</span>`:''}<span style="color:var(--tx3)">👤 ${r.operador||'—'}</span></div>
-      ${r.notas?`<div style="font-size:11px;color:var(--tx2);margin-top:2px">📝 ${r.notas}</div>`:''}</div></div>
+    const esNueva=r.esNueva?'<span class="nueva-badge">NUEVA</span>':'';
+    const msgConf=getMensaje('confirmacion',r);
+    const msgRec=getMensaje('recordatorio',r);
+    const msgMesa=getMensaje('mesa_lista',r);
+    return `<div class="res-item">
+      <div class="res-top">
+        <div class="res-av ${av}">${r.nombre.substring(0,2).toUpperCase()}</div>
+        <div style="flex:1;min-width:0">
+          <div class="res-nom">${r.nombre}${badge}${esNueva}</div>
+          <div class="res-sub">
+            <span>🪑 Mesa ${r.mesa}</span><span>👥 ${r.pax}</span>
+            <span>📅 ${fmt(r.fecha)} ${r.hora}</span>
+            ${r.tel?`<span>📱 ${r.tel}</span>`:'<span style="color:var(--red)">Sin tel</span>'}
+            <span style="color:var(--tx3)">👤 ${r.operador||'Chat web'}</span>
+          </div>
+          ${r.notas?`<div style="font-size:11px;color:var(--tx2);margin-top:2px">📝 ${r.notas}</div>`:''}
+        </div>
+      </div>
       <div class="res-acts">
-        <button class="bsm" onclick="enviarWA('${r.tel||''}',buildMsg('confirmacion',reservas.find(x=>x.id===${r.id})))">✅</button>
-        <button class="bsm" onclick="enviarWA('${r.tel||''}',buildMsg('recordatorio',reservas.find(x=>x.id===${r.id})))">🔔</button>
-        <button class="bsm" onclick="enviarWA('${r.tel||''}',buildMsg('mesa_lista',reservas.find(x=>x.id===${r.id})))">🪑</button>
+        ${r.tel?`
+          <button class="btn-wa" style="font-size:11px;padding:4px 8px" onclick="window.open('${waUrl(r.tel,msgConf)}')">📲 Confirmación</button>
+          <button class="btn-wa" style="font-size:11px;padding:4px 8px" onclick="window.open('${waUrl(r.tel,msgRec)}')">🔔 Recordatorio</button>
+          <button class="btn-wa" style="font-size:11px;padding:4px 8px" onclick="window.open('${waUrl(r.tel,msgMesa)}')">🪑 Mesa lista</button>
+        `:`<span style="font-size:11px;color:var(--red)">⚠️ Sin teléfono</span>`}
         ${r.estado==='reservada'?`<button class="bocu" onclick="sentar(${r.id})">Sentar</button>`:''}
         ${r.estado==='ocupada'?`<button class="bprm" onclick="premio(${r.id})">🏆 La Palabra</button><button class="bok" onclick="liberar(${r.id})">Liberar</button>`:''}
         <button class="bdel" onclick="eliminar(${r.id})">Cancelar</button>
-      </div></div>`;
+      </div>
+    </div>`;
   }).join('');
 }
 
 // ── NUEVA RESERVA ──
-function nueva(){
+function initForm(){
+  const mesas=getMesas();
+  const sel=document.getElementById('f-mesa');sel.innerHTML='';
+  mesas.forEach(m=>{const o=document.createElement('option');o.value=m.num;o.textContent=`Mesa ${m.num} (hasta ${m.cap} pers.)`;sel.appendChild(o);});
+  document.getElementById('f-fecha').value=hoy();
+}
+
+async function nueva(){
   const nom=document.getElementById('f-nom').value.trim();
   const tel=document.getElementById('f-tel').value.trim();
   const fecha=document.getElementById('f-fecha').value;
@@ -558,95 +495,121 @@ function nueva(){
     if(!el.value.trim()){el.classList.add('err');ok=false;}else el.classList.remove('err');
   });
   if(!ok){showToast('⚠️ Completá los campos obligatorios');return;}
-  if(mesasBloq.has(mesa)){showToast('⚠️ Mesa bloqueada — elegí otra');return;}
+  if(mesasBloq.has(mesa)){showToast('⚠️ Mesa bloqueada');return;}
   const r={id:nid++,nombre:nom,tel,fecha,hora,mesa,pax,operador,notas,estado:'reservada'};
   reservas.push(r);
   logMov('nueva',r,operador);
-  guardar();
-  const msg=buildMsg('confirmacion',r);
+
+  // Guardar en Supabase
+  await sbPost({tabla:'reservas',datos:{nombre:nom,telefono:tel,fecha,hora,mesa,personas:pax,operador,notas,estado:'reservada',evento:notas}});
+  guardarLocal();
+
+  // Mensajes
+  const msg=getMensaje('confirmacion',r);
   const dmsg=buildDerechoMsg(r);
   msgActual=msg; telActual=tel;
   document.getElementById('msg-texto').textContent=msg;
-  if(dmsg){
-    document.getElementById('derecho-texto').textContent=dmsg;
-    document.getElementById('derecho-msg-wrap').style.display='block';
-  } else {
-    document.getElementById('derecho-msg-wrap').style.display='none';
-  }
+  document.getElementById('derecho-msg-wrap').style.display=dmsg?'block':'none';
+  if(dmsg) document.getElementById('derecho-texto').textContent=dmsg;
   document.getElementById('bloque-msg').style.display='block';
   document.getElementById('btn-wa-conf').onclick=()=>enviarWA(tel,msg);
+
+  // Notificar al bar por WhatsApp
+  const barTel=(cfg.bar?.tel||'').replace(/\D/g,'');
+  if(barTel){
+    const msgBar=`🍺 *Nueva reserva en ${cfg.bar?.nombre||'La Blonda'}*\n\n👤 ${nom}\n📱 ${tel||'Sin tel'}\n📅 ${fmt(fecha)} ${hora} hs\n🪑 Mesa ${mesa} · ${pax} personas\n👤 Tomó: ${operador}${notas?'\n📝 '+notas:''}`;
+    // Auto-abrir WA del bar para notificar
+    setTimeout(()=>{
+      if(confirm('¿Notificar al bar por WhatsApp?')){
+        window.open(waUrl(barTel,msgBar));
+      }
+    }, 500);
+  }
+
   ['f-nom','f-tel','f-hora','f-notas','f-operador'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('f-pax').value='';
-  showToast('Reserva guardada ✓');
-  // Sugerir mesa
-  if(cfg.asignacion!==false){
-    const sug=sugerirMesa(pax);
-    if(sug&&sug!==mesa) showToast(`💡 Tip: la Mesa ${sug} es ideal para ${pax} personas`);
-  }
+  showToast('✓ Reserva guardada en la nube');
 }
+
 function copiar(){copiarTexto(msgActual);}
 
+function buildDerechoMsg(r){
+  const d=cfg.derecho||{};
+  if(!d.activo||!r.pax||r.pax<(d.desde||5))return '';
+  const monto=d.tipo==='por_persona'?Math.min(r.pax*d.monto,d.maximo>0?d.maximo:Infinity):d.monto;
+  return (mensajesCfg.derecho_reserva||cfg.derecho?.mensaje||'')
+    .replace(/{nombre}/g,r.nombre).replace(/{personas}/g,r.pax)
+    .replace(/{monto}/g,'$'+Number(monto).toLocaleString('es-AR'))
+    .replace(/{desde}/g,d.desde||5).replace(/{alias}/g,d.alias||'—')
+    .replace(/{cbu}/g,d.cbu||'—').replace(/{titular}/g,d.titular||'—')
+    .replace(/{bar}/g,cfg.bar?.nombre||'La Blonda');
+}
+
 // ── ACCIONES ──
-function sentar(id){
+async function sentar(id){
   const r=reservas.find(x=>x.id===id);if(!r)return;
   const op=prompt('¿Quién sentó al cliente?','Encargado');if(!op)return;
-  r.estado='ocupada';logMov('sentar',r,op);guardar();renderMesas();renderLista();cerrarModal();showToast('🪑 Mesa ocupada');
+  r.estado='ocupada'; logMov('sentar',r,op); guardarLocal();
+  await sbPost({tabla:'reservas',datos:{estado:'ocupada'},accion:'update',filtro:r.id});
+  cerrarModal();renderMesas();renderLista();showToast('🪑 Mesa ocupada');
 }
-function liberar(id){
+async function liberar(id){
   const r=reservas.find(x=>x.id===id);if(!r)return;
   const op=prompt('¿Quién libera?','Encargado');if(!op)return;
   historial.push({...r,cumplida:true,operador:op});
-  r.estado='reservada';logMov('liberar',r,op);guardar();cerrarModal();renderMesas();renderLista();showToast('Mesa liberada ✓');
+  r.estado='reservada'; logMov('liberar',r,op); guardarLocal();
+  await sbPost({tabla:'reservas',datos:{estado:'completada'},accion:'update',filtro:r.id});
+  cerrarModal();renderMesas();renderLista();showToast('Mesa liberada ✓');
 }
-function premio(id){
+async function premio(id){
   const r=reservas.find(x=>x.id===id);if(!r)return;
   const op=prompt('¿Quién entrega el premio?','Encargado');if(!op)return;
-  enviarWA(r.tel,buildMsg('premio',r));
-  logMov('premio',r,op);guardar();showToast('🏆 Premio enviado ✓');
+  enviarWA(r.tel,getMensaje('premio',r));
+  logMov('premio',r,op); guardarLocal(); showToast('🏆 Premio enviado ✓');
 }
-function eliminar(id){
+async function eliminar(id){
   const r=reservas.find(x=>x.id===id);if(!r)return;
   const op=prompt('¿Quién cancela?','Encargado');if(!op)return;
   if(!confirm(`¿Cancelar reserva de ${r.nombre}?`))return;
-  if(r.tel&&confirm('¿Notificar cancelación al cliente por WhatsApp?'))window.open(waUrl(r.tel,buildMsg('cancelacion',r)));
+  if(r.tel&&confirm('¿Notificar cancelación al cliente?'))window.open(waUrl(r.tel,getMensaje('cancelacion',r)));
   historial.push({...r,cumplida:false,operador:op});
   logMov('cancelar',r,op);
   reservas=reservas.filter(x=>x.id!==id);
-  guardar();cerrarModal();renderMesas();renderLista();showToast('Cancelada — cliente notificado');
+  guardarLocal();
+  await sbPost({tabla:'reservas',datos:{estado:'cancelada'},accion:'update',filtro:id});
+  cerrarModal();renderMesas();renderLista();showToast('Cancelada — cliente notificado');
 }
 function toggleBloqueo(n){
   const op=prompt('¿Quién realiza esta acción?','Encargado');if(!op)return;
   if(mesasBloq.has(n)){mesasBloq.delete(n);logMov('desbloquear',{mesa:n},op);}
-  else{
-    const{e}=estadoMesa(n);
-    if(e==='ocupada'||e==='reservada'){showToast('⚠️ Mesa con reserva activa');return;}
-    mesasBloq.add(n);logMov('bloquear',{mesa:n},op);
-  }
-  guardar();cerrarModal();renderMesas();showToast('Mesa actualizada');
+  else{const{e}=estadoMesa(n);if(e==='ocupada'||e==='reservada'){showToast('⚠️ Mesa con reserva');return;}mesasBloq.add(n);logMov('bloquear',{mesa:n},op);}
+  guardarLocal();cerrarModal();renderMesas();showToast('Mesa actualizada');
 }
 
-// ── MODAL MESA ──
+// ── MODAL ──
 function abrirModal(n){
   const{e,r}=estadoMesa(n);
   const mesa=getMesas().find(m=>m.num===n);
-  document.getElementById('m-tit').textContent=`Mesa ${n}${mesa?` · hasta ${mesa.cap} pers.`:''}`;
+  document.getElementById('m-tit').textContent=`Mesa ${n}${mesa?` · ${mesa.cap} pers. máx.`:''}`;
   const mi=document.getElementById('m-info'),mm=document.getElementById('m-msgs'),ma=document.getElementById('m-acts');
   mm.innerHTML='';
   if(e==='bloqueada'){
-    mi.innerHTML='🔒 Mesa <b>bloqueada</b> — no acepta reservas.';
+    mi.innerHTML='🔒 Mesa <b>bloqueada</b>.';
     ma.innerHTML=`<button class="bok" onclick="toggleBloqueo(${n})">Desbloquear</button><button class="bsm" onclick="cerrarModal()">Cerrar</button>`;
   } else if(!r){
-    mi.innerHTML=`<span style="color:var(--tx3)">Mesa libre. Capacidad: ${mesa?.cap||'—'} personas.</span>`;
-    ma.innerHTML=`<button class="btn-main" style="font-size:13px;padding:8px 16px" onclick="cerrarModal();irANueva(${n})">+ Reservar</button><button class="bsm" onclick="toggleBloqueo(${n})">🔒 Bloquear</button><button class="bsm" onclick="cerrarModal()">Cerrar</button>`;
+    mi.innerHTML=`<span style="color:var(--tx3)">Mesa libre. Cap: ${mesa?.cap||'—'} pers.</span>`;
+    ma.innerHTML=`<button class="btn-main" style="font-size:13px;padding:8px 14px" onclick="cerrarModal();irANueva(${n})">+ Reservar</button><button class="bsm" onclick="toggleBloqueo(${n})">🔒 Bloquear</button><button class="bsm" onclick="cerrarModal()">Cerrar</button>`;
   } else {
-    mi.innerHTML=`<b>Cliente:</b> ${r.nombre}<br><b>Tel:</b> ${r.tel||'—'}<br><b>Fecha:</b> ${fmt(r.fecha)} ${r.hora} hs<br><b>Personas:</b> ${r.pax} / ${mesa?.cap||'—'} máx.<br><b>Tomó la reserva:</b> ${r.operador||'—'}${r.notas?'<br><b>Notas:</b> '+r.notas:''}`;
+    mi.innerHTML=`<b>Cliente:</b> ${r.nombre}<br><b>Tel:</b> ${r.tel||'<span style="color:var(--red)">Sin teléfono</span>'}<br><b>Fecha:</b> ${fmt(r.fecha)} ${r.hora} hs<br><b>Personas:</b> ${r.pax}<br><b>Tomó la reserva:</b> ${r.operador||'—'}${r.notas?'<br><b>Notas:</b> '+r.notas:''}`;
     const tipos=r.estado==='ocupada'?['confirmacion','recordatorio','mesa_lista','premio']:['confirmacion','recordatorio','mesa_lista'];
     mm.innerHTML=`<div style="font-size:10px;color:var(--tx3);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Mensajes WhatsApp</div>`+
       tipos.map(t=>{
-        const msg=buildMsg(t,r);
-        const waBtn=r.tel?`<button class="btn-wa" style="font-size:11px;padding:5px 10px" onclick="window.open('${waUrl(r.tel,msg).replace(/'/g,"\\'")}')">📲 Enviar</button>`:'';
+        const msg=getMensaje(t,r);
         return `<div style="margin-bottom:9px"><div class="modal-mlbl">${MSG_LBL[t]}</div>
-          <div style="display:flex;gap:5px;flex-wrap:wrap">${waBtn}<button class="btn-copy" style="font-size:11px;padding:5px 10px" onclick="copiarTexto(\`${msg.replace(/`/g,"'")}\`)">⧉ Copiar</button></div></div>`;
+          <div style="display:flex;gap:5px;flex-wrap:wrap">
+            ${r.tel?`<button class="btn-wa" style="font-size:11px;padding:5px 9px" onclick="window.open('${waUrl(r.tel,msg).replace(/'/g,"\\'")}')">📲 Enviar</button>`:'<span style="font-size:11px;color:var(--red)">Sin tel</span>'}
+            <button class="btn-copy" style="font-size:11px;padding:5px 9px" onclick="copiarTexto(\`${msg.replace(/`/g,"'")}\`)">⧉ Copiar</button>
+          </div></div>`;
       }).join('');
     let acc='';
     if(r.estado==='reservada')acc+=`<button class="bocu" onclick="sentar(${r.id})">Sentar</button>`;
@@ -678,7 +641,7 @@ function renderInforme(){
   </div>
   <div class="rep-grid">
     <div class="rep-card"><div class="rep-t">🏆 Clientes frecuentes</div>
-      ${ranking.length?ranking.map((c,i)=>`<div class="rank-row"><div style="font-size:11px;font-weight:700;color:var(--tx3);min-width:16px">${i+1}</div><div style="font-size:12px;font-weight:500;flex:1">${c.nombre}</div><div style="font-size:11px;font-weight:600;color:var(--amb)">${c.count}×</div></div>`).join(''):'<div style="color:var(--tx3);font-size:12px;padding:.5rem 0">Cargá reservas para ver</div>'}
+      ${ranking.length?ranking.map((c,i)=>`<div class="rank-row"><div style="font-size:11px;font-weight:700;color:var(--tx3);min-width:16px">${i+1}</div><div style="font-size:12px;font-weight:500;flex:1">${c.nombre}</div><div style="font-size:11px;font-weight:600;color:var(--amb)">${c.count}×</div></div>`).join(''):'<div style="color:var(--tx3);font-size:12px;padding:.5rem 0">Sin datos</div>'}
     </div>
     <div class="rep-card"><div class="rep-t">🤝 Tasa La Palabra</div>
       <div style="font-size:32px;font-weight:700;color:var(--grn)">${tasa}%</div>
@@ -693,107 +656,13 @@ function renderInforme(){
     </div>
   </div>
   <div class="rep-card"><div class="rep-t">🔍 Últimos movimientos</div>
-    ${movimientos.length===0?'<div style="color:var(--tx3);font-size:12px">Sin movimientos aún</div>':
+    ${movimientos.length===0?'<div style="color:var(--tx3);font-size:12px">Sin movimientos</div>':
       [...movimientos].reverse().slice(0,8).map(m=>`
         <div class="mov-item"><div class="mov-ic">${MICONS[m.tipo]||'•'}</div>
         <div><div class="mov-desc">${MLBLS[m.tipo]}${m.nombre?' — '+m.nombre:''}${m.mesa?' (Mesa '+m.mesa+')':''}</div>
         <div class="mov-meta">👤 ${m.operador} · 🕐 ${m.hora} ${m.fecha}</div></div></div>`).join('')}
   </div>`;
 }
-
-// ── CHAT CON CLAUDE ──
-function chatKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();chatEnviar();}}
-function chatMsg(texto,esBot,extra){
-  const c=document.getElementById('chat-msgs');
-  const d=document.createElement('div');d.className='burbuja '+(esBot?'bot':'usr');
-  if(esBot){const n=document.createElement('div');n.className='bot-nm';n.textContent=getBarNombre();d.appendChild(n);}
-  const p=document.createElement('p');p.style.margin='0';p.textContent=texto;d.appendChild(p);
-  if(extra)d.appendChild(extra);
-  c.appendChild(d);c.scrollTop=c.scrollHeight;
-}
-function chatTyping(){
-  const c=document.getElementById('chat-msgs');
-  const d=document.createElement('div');d.className='burbuja bot';d.id='typing';
-  d.innerHTML=`<div class="bot-nm">${getBarNombre()}</div><div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
-  c.appendChild(d);c.scrollTop=c.scrollHeight;
-}
-async function chatEnviar(){
-  const inp=document.getElementById('chat-inp');
-  const txt=inp.value.trim();if(!txt)return;
-  inp.value='';
-  chatMsg(txt,false);
-  chatHist.push({role:'user',content:txt});
-  chatTyping();
-  try{
-    const res=await fetch('/api/chat',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({messages:chatHist,cfg,eventoActual:null})
-    });
-    const data=await res.json();
-    document.getElementById('typing')?.remove();
-    chatHist.push({role:'assistant',content:data.texto});
-    if(data.accion?.ACCION==='RESERVAR'){
-      const a=data.accion;
-      const r={id:nid++,nombre:a.nombre,tel:a.telefono||'',fecha:a.fecha,hora:a.hora,
-        mesa:a.mesa,pax:a.personas,operador:'Chat web',notas:a.evento||'',estado:'reservada'};
-      reservas.push(r);logMov('nueva',r,'Chat web');guardar();renderMesas();
-      const extra=document.createElement('div');
-      extra.className='confirm-card';
-      const[y,m,dd]=(a.fecha||'').split('-');
-      extra.innerHTML=`<div class="confirm-t">✅ ¡Reserva confirmada!</div>
-        <div class="confirm-d">👤 ${a.nombre}<br>📅 ${dd||'?'}/${m||'?'}/${y||'?'} — ${a.hora||'?'} hs<br>🪑 Mesa ${a.mesa} · ${a.personas} personas</div>`;
-      const barTel=(cfg.bar?.tel||'').replace(/\D/g,'');
-      if(barTel){
-        const msg=buildMsg('confirmacion',r);
-        const btn=document.createElement('button');
-        btn.className='btn-wa-confirm';
-        btn.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.117.554 4.1 1.523 5.82L.057 23.272a.75.75 0 0 0 .916.924l5.635-1.478A11.952 11.952 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.87 0-3.628-.507-5.147-1.391l-.369-.218-3.818 1.002 1.017-3.712-.24-.38A9.961 9.961 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg> Enviar confirmación por WhatsApp';
-        const num=barTel.startsWith('54')?barTel:'54'+barTel;
-        btn.onclick=()=>window.open(`https://wa.me/${num}?text=${encodeURIComponent(msg)}`);
-        extra.appendChild(btn);
-      }
-      chatMsg(data.texto,true,extra);
-    } else {
-      chatMsg(data.texto,true);
-    }
-  }catch(e){
-    document.getElementById('typing')?.remove();
-    chatMsg('Ups, hubo un problema de conexión. Intentá de nuevo.',true);
-  }
-}
-function initChat(){
-  document.getElementById('chat-msgs').innerHTML='';
-  chatHist=[];
-  chatMsg(`¡Hola! 👋 Soy el asistente de *${getBarNombre()}*.\n\nPuedo ayudarte a consultar disponibilidad y hacer tu reserva. ¿Para cuándo querés venir?`,true);
-}
-
-// ── POPUP EVENTOS ──
-function mostrarPopup(){
-  const activos=(cfg.eventos||[]).filter(e=>e.activo);
-  if(!activos.length)return;
-  const ev=activos[Math.floor(Math.random()*activos.length)];
-  popupEvento=ev;
-  const TIPOS={show:'🎸 Show en vivo',karaoke:'🎤 Karaoke',tematica:'🌙 Noche temática',dj:'🎧 DJ',standup:'🎭 Stand up',deporte:'📺 Deportes',promo:'🍺 Promo',otro:'⭐ Evento'};
-  document.getElementById('p-badge').textContent=TIPOS[ev.tipo]||'Evento especial';
-  document.getElementById('p-title').textContent=ev.nombre;
-  document.getElementById('p-desc').textContent=ev.desc||'';
-  document.getElementById('p-emoji').textContent=ev.emoji||'🎭';
-  const img=document.getElementById('p-img');
-  const existingImg=img.querySelector('img');if(existingImg)existingImg.remove();
-  if(ev.img){const i=document.createElement('img');i.src=ev.img;i.alt=ev.nombre;i.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover';img.appendChild(i);}
-  const[y,m,d]=(ev.fecha||'').split('-');
-  const meta=[];
-  if(ev.fecha)meta.push(`📅 ${d}/${m}/${y}`);
-  if(ev.hora)meta.push(`🕐 ${ev.hora} hs`);
-  if(ev.precio>0)meta.push(`💵 $${Number(ev.precio).toLocaleString('es-AR')}`);
-  else meta.push('🎉 Entrada libre');
-  if(ev.cupos>0)meta.push(`🎟️ ${ev.cupos} cupos`);
-  document.getElementById('p-meta').textContent=meta.join('  ·  ');
-  document.getElementById('popup-overlay').classList.add('open');
-}
-function cerrarPopup(){document.getElementById('popup-overlay').classList.remove('open');}
-function popupReservar(){cerrarPopup();tab('nueva');}
 
 // ── PWA ──
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;document.getElementById('pwa-bar').classList.add('show');});
@@ -802,69 +671,21 @@ if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.ser
 
 // ── TABS ──
 function tab(name){
-  document.querySelectorAll('.nb').forEach((b,i)=>b.classList.toggle('active',['mesas','nueva','lista','informe','chat'][i]===name));
+  document.querySelectorAll('.nb').forEach((b,i)=>b.classList.toggle('active',['mesas','nueva','lista','informe'][i]===name));
   document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
   document.getElementById('pane-'+name).classList.add('active');
   if(name==='mesas')renderMesas();
-  if(name==='lista')renderLista();
+  if(name==='lista'){nuevasReservas=0;document.getElementById('nb-lista').textContent='≡ Reservas';renderLista();}
   if(name==='informe')renderInforme();
-  if(name==='chat')initChat();
-}
-
-
-// ── SUPABASE SYNC ──
-const SB_URL = 'PLACEHOLDER_SB_SYNC';
-async function syncReservasDesdeSupabase(){
-  try{
-    const r = await fetch('/api/supabase?tabla=reservas');
-    const data = await r.json();
-    if(!Array.isArray(data)) return;
-    // Convertir formato Supabase al formato local
-    const nuevas = data.filter(sb=>{
-      return !reservas.find(r=>String(r.id)===String(sb.id));
-    }).map(sb=>({
-      id: sb.id, nombre: sb.nombre||'', tel: sb.telefono||'',
-      fecha: sb.fecha||'', hora: sb.hora||'',
-      mesa: sb.mesa||1, pax: sb.personas||1,
-      operador: sb.operador||'Chat web', notas: sb.notas||'',
-      estado: sb.estado||'reservada'
-    }));
-    if(nuevas.length>0){
-      reservas.push(...nuevas);
-      guardar();
-      renderMesas();
-      renderLista();
-      showToast('✓ '+nuevas.length+' reserva'+( nuevas.length>1?'s':'')+' sincronizada'+( nuevas.length>1?'s':''));
-    }
-  }catch(e){}
-}
-
-async function syncEventosDesdeSupabase(){
-  try{
-    const r = await fetch('/api/supabase?tabla=eventos');
-    const data = await r.json();
-    if(!Array.isArray(data)) return;
-    // Guardar en cfg para que el chat los use
-    if(!cfg.eventos) cfg.eventos = [];
-    data.forEach(ev=>{
-      const idx = cfg.eventos.findIndex(e=>e.id===ev.id);
-      const mapped = {id:ev.id,nombre:ev.nombre,tipo:ev.tipo,fecha:ev.fecha,hora:ev.hora,
-        precio:ev.precio,cupos:ev.cupos,desc:ev.descripcion,slug:ev.slug,
-        emoji:ev.emoji,activo:ev.activo,claudeMsg:ev.claude_msg,img:ev.img};
-      if(idx>=0) cfg.eventos[idx]=mapped;
-      else cfg.eventos.push(mapped);
-    });
-  }catch(e){}
 }
 
 // ── INIT ──
 cargarCfg();
-cargarReservas();
-syncEventosDesdeSupabase();
-syncReservasDesdeSupabase();
+cargarLocal();
 initForm();
 renderMesas();
-setTimeout(mostrarPopup, 8000);
+sincronizar(); // Sync automático al abrir
+setInterval(sincronizar, 60000); // Sync cada 1 minuto
 setInterval(()=>{if(document.getElementById('pane-mesas').classList.contains('active'))renderAlertas();},300000);
 </script>
 </body>
