@@ -210,6 +210,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <div class="topbar">
   <div class="logo">La <em>Blonda</em></div>
+  <button style="background:var(--grn-bg);border:1px solid var(--grn);color:var(--grn);padding:5px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:500;margin-right:6px" onclick="syncReservasDesdeSupabase()">↻ Sync</button>
   <nav class="nav">
     <button class="nb active" onclick="tab('mesas')">🍺 Mesas</button>
     <button class="nb" onclick="tab('nueva')">+ Nueva</button>
@@ -810,9 +811,57 @@ function tab(name){
   if(name==='chat')initChat();
 }
 
+
+// ── SUPABASE SYNC ──
+const SB_URL = 'PLACEHOLDER_SB_SYNC';
+async function syncReservasDesdeSupabase(){
+  try{
+    const r = await fetch('/api/supabase?tabla=reservas');
+    const data = await r.json();
+    if(!Array.isArray(data)) return;
+    // Convertir formato Supabase al formato local
+    const nuevas = data.filter(sb=>{
+      return !reservas.find(r=>String(r.id)===String(sb.id));
+    }).map(sb=>({
+      id: sb.id, nombre: sb.nombre||'', tel: sb.telefono||'',
+      fecha: sb.fecha||'', hora: sb.hora||'',
+      mesa: sb.mesa||1, pax: sb.personas||1,
+      operador: sb.operador||'Chat web', notas: sb.notas||'',
+      estado: sb.estado||'reservada'
+    }));
+    if(nuevas.length>0){
+      reservas.push(...nuevas);
+      guardar();
+      renderMesas();
+      renderLista();
+      showToast('✓ '+nuevas.length+' reserva'+( nuevas.length>1?'s':'')+' sincronizada'+( nuevas.length>1?'s':''));
+    }
+  }catch(e){}
+}
+
+async function syncEventosDesdeSupabase(){
+  try{
+    const r = await fetch('/api/supabase?tabla=eventos');
+    const data = await r.json();
+    if(!Array.isArray(data)) return;
+    // Guardar en cfg para que el chat los use
+    if(!cfg.eventos) cfg.eventos = [];
+    data.forEach(ev=>{
+      const idx = cfg.eventos.findIndex(e=>e.id===ev.id);
+      const mapped = {id:ev.id,nombre:ev.nombre,tipo:ev.tipo,fecha:ev.fecha,hora:ev.hora,
+        precio:ev.precio,cupos:ev.cupos,desc:ev.descripcion,slug:ev.slug,
+        emoji:ev.emoji,activo:ev.activo,claudeMsg:ev.claude_msg,img:ev.img};
+      if(idx>=0) cfg.eventos[idx]=mapped;
+      else cfg.eventos.push(mapped);
+    });
+  }catch(e){}
+}
+
 // ── INIT ──
 cargarCfg();
 cargarReservas();
+syncEventosDesdeSupabase();
+syncReservasDesdeSupabase();
 initForm();
 renderMesas();
 setTimeout(mostrarPopup, 8000);
