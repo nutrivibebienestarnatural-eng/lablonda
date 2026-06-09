@@ -10,55 +10,52 @@ export default async function handler(req, res) {
   const mesas = cfg?.mesas || [];
   const derecho = cfg?.derecho || {};
 
-  const SUPABASE_URL = process.env.SUPABASE_URL;
-  const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY;
-
-  // Leer eventos directo de Supabase (sin pasar por supabase.js)
+  // Eventos: vienen del frontend (admin los guarda en localStorage y el index los manda)
+  // Si no vienen del frontend, usamos los de Supabase como respaldo
   let eventosActivos = [];
-  try {
-    const r = await fetch(`${SUPABASE_URL}/rest/v1/eventos?select=*`, {
-      headers: {
-        'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`
+  
+  if (Array.isArray(eventos) && eventos.length > 0) {
+    eventosActivos = eventos.filter(e => e.activo === true || e.activo === 'true');
+  } else {
+    // Intento con Supabase como respaldo
+    try {
+      const SB = process.env.SUPABASE_URL;
+      const KEY = process.env.SUPABASE_ANON_KEY;
+      if (SB && KEY) {
+        const r = await fetch(`${SB}/rest/v1/eventos?select=*&activo=eq.true`, {
+          headers: { 'apikey': KEY, 'Authorization': `Bearer ${KEY}` }
+        });
+        const data = await r.json();
+        if (Array.isArray(data)) eventosActivos = data;
       }
-    });
-    const data = await r.json();
-    if (Array.isArray(data)) {
-      eventosActivos = data.filter(e => e.activo === true);
-    }
-  } catch(e) {
-    console.error('Error leyendo eventos:', e);
+    } catch(e) {}
   }
 
-  // Si el frontend mandó eventos, usarlos también
-  if (eventosActivos.length === 0 && Array.isArray(eventos) && eventos.length > 0) {
-    eventosActivos = eventos.filter(e => e.activo);
-  }
-
-  // Leer reservas activas para estado de mesas
+  // Reservas activas
   let reservasActivas = [];
   try {
-    const r = await fetch(`${SUPABASE_URL}/rest/v1/reservas?estado=eq.reservada&select=mesa,nombre`, {
-      headers: {
-        'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`
-      }
-    });
-    const data = await r.json();
-    if (Array.isArray(data)) reservasActivas = data;
+    const SB = process.env.SUPABASE_URL;
+    const KEY = process.env.SUPABASE_ANON_KEY;
+    if (SB && KEY) {
+      const r = await fetch(`${SB}/rest/v1/reservas?estado=eq.reservada&select=mesa,nombre`, {
+        headers: { 'apikey': KEY, 'Authorization': `Bearer ${KEY}` }
+      });
+      const data = await r.json();
+      if (Array.isArray(data)) reservasActivas = data;
+    }
   } catch(e) {}
 
-  const mesasSummary = mesas.map(m => {
-    const ocupada = reservasActivas.find(r => r.mesa === m.num);
-    return `Mesa ${m.num} (hasta ${m.cap} pers.): ${ocupada ? 'RESERVADA — ' + ocupada.nombre : 'LIBRE'}`;
-  }).join('\n');
+  const mesasSummary = mesas.length > 0
+    ? mesas.map(m => {
+        const ocupada = reservasActivas.find(r => r.mesa === m.num);
+        return `Mesa ${m.num} (${m.cap} pers.): ${ocupada ? 'RESERVADA — ' + ocupada.nombre : 'LIBRE'}`;
+      }).join('\n')
+    : 'Mesas disponibles para reservar';
 
   const eventosStr = eventosActivos.length > 0
     ? eventosActivos.map(e => {
         const [y, m, d] = (e.fecha || '').split('-');
-        const precio = e.precio > 0 ? ` — Entrada: $${Number(e.precio).toLocaleString('es-AR')}` : ' — Entrada libre';
-        const instr = e.claude_msg ? `\n  Notas: ${e.claude_msg}` : '';
-        return `• "${e.nombre}" (${e.tipo}) — ${d||'?'}/${m||'?'}/${y||'?'} ${e.hora||''}hs${precio}${instr}`;
+        return `• "${e.nombre}" — ${d||'?'}/${m||'?'}/${y||'?'} ${e.hora||''}hs${e.precio > 0 ? ' ($' + Number(e.precio).toLocaleString('es-AR') + ')' : ' — Entrada libre'}${(e.claude_msg||e.claudeMsg) ? '\n  Nota: '+(e.claude_msg||e.claudeMsg) : ''}`;
       }).join('\n')
     : 'Sin eventos especiales esta semana';
 
@@ -71,22 +68,20 @@ DATOS DEL BAR:
 - Instagram: @${bar.ig || 'lablonda'}
 - WhatsApp: ${bar.tel || '—'}
 
-EVENTOS ACTIVOS ESTA SEMANA:
+EVENTOS ESTA SEMANA:
 ${eventosStr}
 
 ESTADO DE MESAS:
-${mesasSummary || 'Mesas disponibles'}
+${mesasSummary}
+${derecho.activo ? `\nDERECHO DE RESERVA: Grupos de ${derecho.desde}+ personas requieren garantía de ${derecho.tipo === 'por_persona' ? '$'+derecho.monto+' por persona' : '$'+derecho.monto}. Alias: ${derecho.alias||'—'}, CBU: ${derecho.cbu||'—'}.` : ''}
 
-${derecho.activo ? `DERECHO DE RESERVA: Para grupos de ${derecho.desde}+ personas, se requiere una garantía de ${derecho.tipo === 'por_persona' ? '$' + derecho.monto + ' por persona' : '$' + derecho.monto + ' fijo'}. Alias: ${derecho.alias || '—'}, CBU: ${derecho.cbu || '—'}.` : ''}
-
-INSTRUCCIONES IMPORTANTES:
-1. AL ARRANCAR siempre mencioná los eventos disponibles esta semana
-2. Preguntá para cuál evento quiere reservar o si prefiere una reserva general
-3. Recolectá: nombre completo, teléfono, fecha, hora, cantidad de personas
-4. Sugerí la mesa más adecuada según capacidad
-5. Cuando tengas TODOS los datos confirmados, incluí al FINAL este JSON exacto sin markdown:
+INSTRUCCIONES:
+1. Siempre mencioná los eventos disponibles al arrancar
+2. Preguntá para cuál evento quiere reservar
+3. Recolectá: nombre, teléfono, fecha, hora, personas
+4. Cuando tengas todos los datos, incluí al final este JSON sin markdown:
 {"ACCION":"RESERVAR","nombre":"...","telefono":"...","fecha":"YYYY-MM-DD","hora":"HH:MM","mesa":N,"personas":N,"evento":"..."}
-6. Tono: alegre, argentino, cálido, emojis moderados`;
+5. Tono: alegre, argentino, cálido`;
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -97,7 +92,7 @@ INSTRUCCIONES IMPORTANTES:
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-5',
+        model: 'claude-haiku-4-5-20251001',
         max_tokens: 1024,
         system,
         messages: messages || []
@@ -105,46 +100,36 @@ INSTRUCCIONES IMPORTANTES:
     });
 
     const data = await response.json();
-    const texto = data.content?.[0]?.text || 'Disculpá, hubo un problema. Intentá de nuevo.';
-
-    let accion = null;
-    const jsonMatch = texto.match(/\{"ACCION"\s*:\s*"RESERVAR"[^}]+\}/s);
-    if (jsonMatch) {
-      try { accion = JSON.parse(jsonMatch[0]); } catch(e) {}
+    
+    if (data.error) {
+      console.error('Claude error:', data.error);
+      return res.status(200).json({ texto: 'Disculpá, hubo un problema técnico. Intentá de nuevo.' });
     }
 
+    const texto = data.content?.[0]?.text || 'Disculpá, hubo un problema. Intentá de nuevo.';
+    let accion = null;
+    const jsonMatch = texto.match(/\{"ACCION"\s*:\s*"RESERVAR"[^}]+\}/s);
+    if (jsonMatch) { try { accion = JSON.parse(jsonMatch[0]); } catch(e) {} }
     const textoLimpio = texto.replace(/\{"ACCION"\s*:\s*"RESERVAR"[^}]+\}/gs, '').trim();
 
     // Guardar reserva en Supabase
-    if (accion?.ACCION === 'RESERVAR' && SUPABASE_URL && SUPABASE_KEY) {
+    if (accion?.ACCION === 'RESERVAR') {
       try {
-        await fetch(`${SUPABASE_URL}/rest/v1/reservas`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'apikey': SUPABASE_KEY,
-            'Authorization': `Bearer ${SUPABASE_KEY}`,
-            'Prefer': 'return=minimal'
-          },
-          body: JSON.stringify({
-            nombre: accion.nombre,
-            telefono: accion.telefono,
-            fecha: accion.fecha,
-            hora: accion.hora,
-            mesa: accion.mesa,
-            personas: accion.personas,
-            estado: 'reservada',
-            operador: 'Chat web',
-            notas: accion.evento || '',
-            evento: accion.evento || ''
-          })
-        });
-      } catch(e) { console.error('Error guardando reserva:', e); }
+        const SB = process.env.SUPABASE_URL;
+        const KEY = process.env.SUPABASE_ANON_KEY;
+        if (SB && KEY) {
+          await fetch(`${SB}/rest/v1/reservas`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'apikey': KEY, 'Authorization': `Bearer ${KEY}`, 'Prefer': 'return=minimal' },
+            body: JSON.stringify({ nombre: accion.nombre, telefono: accion.telefono, fecha: accion.fecha, hora: accion.hora, mesa: accion.mesa, personas: accion.personas, estado: 'reservada', operador: 'Chat web', evento: accion.evento || '' })
+          });
+        }
+      } catch(e) {}
     }
 
     res.status(200).json({ texto: textoLimpio, accion });
   } catch(e) {
-    console.error(e);
-    res.status(500).json({ texto: 'Error de conexión. Intentá de nuevo en un momento.' });
+    console.error('Error:', e);
+    res.status(500).json({ texto: 'Error de conexión. Intentá de nuevo.' });
   }
 }
