@@ -287,7 +287,20 @@ function initChat(barNombre){
   chatHist=[];
   const activos=eventosDB.length>0?eventosDB:(cfg.eventos||[]).filter(e=>e.activo);
   const eventoMsg = activos.length ? `\n\n🎭 Esta semana: *${activos[0].nombre}* — no te lo pierdas.` : '';
-  chatMsg(`¡Hola! 👋 Bienvenido a *${barNombre}*.${eventoMsg}\n\n¿En qué te puedo ayudar? Puedo reservarte una mesa, contarte sobre nuestros eventos o darte info del bar. 🍺`, true);
+  
+  let saludo = '¡Hola! 👋 Bienvenido a *' + barNombre + '*.';
+  if(eventosDB.length > 0){
+    saludo += '\n\n🎭 *Esta semana tenemos:*';
+    eventosDB.forEach(e=>{
+      const pts=(e.fecha||'').split('-');
+      const fFmt=pts.length===3?pts[2]+'/'+pts[1]+'/'+pts[0]:'';
+      saludo += '\n• *'+e.nombre+'*'+(fFmt?' — '+fFmt:'')+(e.hora?' '+e.hora+'hs':'')+(e.precio>0?' ($'+Number(e.precio).toLocaleString('es-AR')+')'  :' — Entrada libre');
+    });
+    saludo += '\n\n¿Para cuál evento querés reservar, o preferís una reserva general? 🍺';
+  } else {
+    saludo += '\n\n¿En qué te puedo ayudar? Puedo reservarte una mesa o darte info del bar. 🍺';
+  }
+  chatMsg(saludo, true);
 }
 
 function chatKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();chatEnviar();}}
@@ -371,41 +384,39 @@ async function chatEnviar(){
 }
 
 
-// Eventos cargados desde Supabase
+// ── EVENTOS Y SPONSORS DESDE SUPABASE ──
 let eventosDB = [];
 let sponsorsDB = [];
 
-async function cargarEventosYSponsors(){
+async function cargarDatos(){
   try{
-    const [evRes, spRes] = await Promise.all([
-      fetch('/api/supabase?tabla=eventos'),
-      fetch('/api/supabase?tabla=sponsors')
-    ]);
-    const evData = await evRes.json();
-    const spData = await spRes.json();
-    if(Array.isArray(evData)) eventosDB = evData.filter(e=>e.activo);
-    if(Array.isArray(spData)) sponsorsDB = spData.filter(s=>s.activo);
-    renderSponsorsCarrusel();
-    console.log('Eventos cargados:', eventosDB.length, 'Sponsors:', sponsorsDB.length);
-  }catch(e){
-    console.error('Error cargando datos:', e);
-  }
+    const r1 = await fetch('/api/supabase?tabla=eventos');
+    const d1 = await r1.json();
+    if(Array.isArray(d1)) eventosDB = d1.filter(e=>e.activo);
+  }catch(e){ console.error('Error eventos:', e); }
+  
+  try{
+    const r2 = await fetch('/api/supabase?tabla=sponsors');
+    const d2 = await r2.json();
+    if(Array.isArray(d2)) sponsorsDB = d2.filter(s=>s.activo);
+    renderCarrusel();
+  }catch(e){ console.error('Error sponsors:', e); }
 }
 
-function renderSponsorsCarrusel(){
-  const section = document.getElementById('sponsors-section');
-  const track = document.getElementById('sponsors-track');
-  if(!section||!track||!sponsorsDB.length) return;
-  const items = [...sponsorsDB, ...sponsorsDB];
-  track.innerHTML = items.map(s=>s.img
-    ?`<img src="${s.img}" style="width:80px;height:60px;object-fit:contain;filter:grayscale(20%);opacity:.85;flex-shrink:0" alt="${s.nombre}" title="${s.nombre}">`
-    :`<div style="width:80px;height:60px;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--tx3);text-align:center;flex-shrink:0;padding:4px">${s.nombre}</div>`
+function renderCarrusel(){
+  const sec = document.getElementById('sponsors-section');
+  const trk = document.getElementById('sponsors-track');
+  if(!sec||!trk||!sponsorsDB.length) return;
+  const items = [...sponsorsDB,...sponsorsDB];
+  trk.innerHTML = items.map(s=>s.img
+    ?`<img src="${s.img}" style="width:80px;height:60px;object-fit:contain;opacity:.85;flex-shrink:0" alt="${s.nombre}">`
+    :`<div style="width:80px;height:60px;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--tx3);text-align:center;flex-shrink:0">${s.nombre}</div>`
   ).join('');
-  section.style.display='block';
+  sec.style.display='block';
 }
 
 init();
-cargarEventosYSponsors();
+cargarDatos();
 if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
 </script>
 </body>
