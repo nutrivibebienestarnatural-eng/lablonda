@@ -10,28 +10,37 @@ export default async function handler(req, res) {
   const mesas = cfg?.mesas || [];
   const derecho = cfg?.derecho || {};
 
-  // Eventos: vienen del frontend (admin los guarda en localStorage y el index los manda)
-  // Si no vienen del frontend, usamos los de Supabase como respaldo
-  let eventosActivos = [];
-  
+  // EVENTOS HARDCODEADOS — siempre disponibles
+  const EVENTOS_FIJOS = [
+    {
+      nombre: 'Karaoke con Fernando Bosco',
+      tipo: 'karaoke',
+      fecha: '2026-06-10',
+      hora: '23:00',
+      precio: 0,
+      activo: true,
+      claudeMsg: 'Noche de karaoke con Fernando Bosco. Entrada libre. Recomendá mesas centrales para que todos vean la pantalla.'
+    },
+    {
+      nombre: 'Marcos Capitán y su Banda + Maicho Maraquista',
+      tipo: 'show',
+      fecha: '2026-06-11',
+      hora: '23:00',
+      precio: 8000,
+      activo: true,
+      claudeMsg: 'Show en vivo de Marcos Capitán y su banda con la actuación especial de Maicho Maraquista. Entrada $8.000. Recomendá mesas cercanas al escenario.'
+    }
+  ];
+
+  // Combinar: eventos del frontend + eventos fijos
+  let eventosActivos = EVENTOS_FIJOS;
   if (Array.isArray(eventos) && eventos.length > 0) {
-    eventosActivos = eventos.filter(e => e.activo === true || e.activo === 'true');
-  } else {
-    // Intento con Supabase como respaldo
-    try {
-      const SB = process.env.SUPABASE_URL;
-      const KEY = process.env.SUPABASE_ANON_KEY;
-      if (SB && KEY) {
-        const r = await fetch(`${SB}/rest/v1/eventos?select=*&activo=eq.true`, {
-          headers: { 'apikey': KEY, 'Authorization': `Bearer ${KEY}` }
-        });
-        const data = await r.json();
-        if (Array.isArray(data)) eventosActivos = data;
-      }
-    } catch(e) {}
+    const extras = eventos.filter(e => (e.activo === true || e.activo === 'true') && 
+      !EVENTOS_FIJOS.find(f => f.nombre === e.nombre));
+    eventosActivos = [...EVENTOS_FIJOS, ...extras];
   }
 
-  // Reservas activas
+  // Reservas activas de Supabase
   let reservasActivas = [];
   try {
     const SB = process.env.SUPABASE_URL;
@@ -50,14 +59,12 @@ export default async function handler(req, res) {
         const ocupada = reservasActivas.find(r => r.mesa === m.num);
         return `Mesa ${m.num} (${m.cap} pers.): ${ocupada ? 'RESERVADA — ' + ocupada.nombre : 'LIBRE'}`;
       }).join('\n')
-    : 'Mesas disponibles para reservar';
+    : 'Mesas disponibles';
 
-  const eventosStr = eventosActivos.length > 0
-    ? eventosActivos.map(e => {
-        const [y, m, d] = (e.fecha || '').split('-');
-        return `• "${e.nombre}" — ${d||'?'}/${m||'?'}/${y||'?'} ${e.hora||''}hs${e.precio > 0 ? ' ($' + Number(e.precio).toLocaleString('es-AR') + ')' : ' — Entrada libre'}${(e.claude_msg||e.claudeMsg) ? '\n  Nota: '+(e.claude_msg||e.claudeMsg) : ''}`;
-      }).join('\n')
-    : 'Sin eventos especiales esta semana';
+  const eventosStr = eventosActivos.map(e => {
+    const [y, m, d] = (e.fecha || '').split('-');
+    return `• *${e.nombre}* — ${d}/${m}/${y} ${e.hora}hs${e.precio > 0 ? ' — Entrada: $' + Number(e.precio).toLocaleString('es-AR') : ' — Entrada libre'}${e.claudeMsg ? '\n  ' + e.claudeMsg : ''}`;
+  }).join('\n');
 
   const system = `Sos el asistente virtual de *${bar.nombre || 'La Blonda'}*, un bar con mucha onda en Argentina.
 
@@ -76,12 +83,13 @@ ${mesasSummary}
 ${derecho.activo ? `\nDERECHO DE RESERVA: Grupos de ${derecho.desde}+ personas requieren garantía de ${derecho.tipo === 'por_persona' ? '$'+derecho.monto+' por persona' : '$'+derecho.monto}. Alias: ${derecho.alias||'—'}, CBU: ${derecho.cbu||'—'}.` : ''}
 
 INSTRUCCIONES:
-1. Siempre mencioná los eventos disponibles al arrancar
-2. Preguntá para cuál evento quiere reservar
-3. Recolectá: nombre, teléfono, fecha, hora, personas
-4. Cuando tengas todos los datos, incluí al final este JSON sin markdown:
+1. SIEMPRE al arrancar mencioná los dos eventos de esta semana
+2. Preguntá para cuál evento quiere reservar o si prefiere reserva general
+3. Recolectá: nombre completo, teléfono, fecha, hora, personas
+4. Sugerí la mesa más adecuada
+5. Cuando tengas TODOS los datos, incluí al final este JSON sin markdown:
 {"ACCION":"RESERVAR","nombre":"...","telefono":"...","fecha":"YYYY-MM-DD","hora":"HH:MM","mesa":N,"personas":N,"evento":"..."}
-5. Tono: alegre, argentino, cálido`;
+6. Tono: alegre, argentino, cálido, con onda`;
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -100,10 +108,10 @@ INSTRUCCIONES:
     });
 
     const data = await response.json();
-    
+
     if (data.error) {
-      console.error('Claude error:', data.error);
-      return res.status(200).json({ texto: 'Disculpá, hubo un problema técnico. Intentá de nuevo.' });
+      console.error('Claude API error:', JSON.stringify(data.error));
+      return res.status(200).json({ texto: 'Disculpá, hubo un problema técnico. Intentá de nuevo en un momento.' });
     }
 
     const texto = data.content?.[0]?.text || 'Disculpá, hubo un problema. Intentá de nuevo.';
@@ -121,7 +129,13 @@ INSTRUCCIONES:
           await fetch(`${SB}/rest/v1/reservas`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'apikey': KEY, 'Authorization': `Bearer ${KEY}`, 'Prefer': 'return=minimal' },
-            body: JSON.stringify({ nombre: accion.nombre, telefono: accion.telefono, fecha: accion.fecha, hora: accion.hora, mesa: accion.mesa, personas: accion.personas, estado: 'reservada', operador: 'Chat web', evento: accion.evento || '' })
+            body: JSON.stringify({
+              nombre: accion.nombre, telefono: accion.telefono,
+              fecha: accion.fecha, hora: accion.hora,
+              mesa: accion.mesa, personas: accion.personas,
+              estado: 'reservada', operador: 'Chat web',
+              evento: accion.evento || ''
+            })
           });
         }
       } catch(e) {}
@@ -129,7 +143,7 @@ INSTRUCCIONES:
 
     res.status(200).json({ texto: textoLimpio, accion });
   } catch(e) {
-    console.error('Error:', e);
+    console.error('Error general:', e);
     res.status(500).json({ texto: 'Error de conexión. Intentá de nuevo.' });
   }
 }
