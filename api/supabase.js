@@ -1,121 +1,118 @@
-// api/supabase.js — CRUD para eventos, config y reservas
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  const SUPABASE_URL = process.env.SUPABASE_URL;
-  const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY;
+  const SB = process.env.SUPABASE_URL;
+  const KEY = process.env.SUPABASE_ANON_KEY;
+  if (!SB || !KEY) return res.status(500).json({ error: 'Supabase no configurado' });
 
-  if (!SUPABASE_URL || !SUPABASE_KEY) {
-    return res.status(500).json({ error: 'Supabase no configurado' });
-  }
-
-  const headers = {
+  const H = {
     'Content-Type': 'application/json',
-    'apikey': SUPABASE_KEY,
-    'Authorization': `Bearer ${SUPABASE_KEY}`,
+    'apikey': KEY,
+    'Authorization': `Bearer ${KEY}`,
     'Prefer': 'return=representation'
   };
 
-  const { tabla, accion, datos, filtro } = req.body || {};
-  const tablaParam = req.query.tabla;
-  const accionParam = req.query.accion;
-
-  // GET — leer datos
+  // GET — leer tabla
   if (req.method === 'GET') {
-    const t = tablaParam || 'reservas';
+    const tabla = req.query.tabla || 'reservas';
     try {
-      let url = `${SUPABASE_URL}/rest/v1/${t}?select=*`;
-      if (t === 'reservas') url += '&order=created_at.desc';
-      if (t === 'eventos') url += '&order=created_at.desc';
-      const r = await fetch(url, { headers });
+      let url = `${SB}/rest/v1/${tabla}?select=*`;
+      if (tabla === 'reservas') url += '&order=created_at.desc';
+      if (tabla === 'eventos') url += '&order=created_at.desc';
+      if (tabla === 'sponsors') url += '&order=orden.asc';
+      const r = await fetch(url, { headers: H });
       const data = await r.json();
-      return res.status(200).json(data);
+      return res.status(200).json(Array.isArray(data) ? data : []);
     } catch(e) {
       return res.status(500).json({ error: e.message });
     }
   }
 
-  // POST — escribir datos
+  // POST — insertar, actualizar, eliminar, upsert
   if (req.method === 'POST') {
+    const { tabla, accion, datos, filtro } = req.body || {};
+    if (!tabla) return res.status(400).json({ error: 'Falta tabla' });
+
     try {
-      // Guardar evento
-      if (tabla === 'eventos') {
-        const r = await fetch(`${SUPABASE_URL}/rest/v1/eventos`, {
-          method: 'POST',
-          headers,
+
+      // ELIMINAR
+      if (accion === 'delete') {
+        const r = await fetch(`${SB}/rest/v1/${tabla}?id=eq.${filtro}`, {
+          method: 'DELETE', headers: H
+        });
+        return res.status(200).json({ ok: true });
+      }
+
+      // ACTUALIZAR
+      if (accion === 'update') {
+        const r = await fetch(`${SB}/rest/v1/${tabla}?id=eq.${filtro}`, {
+          method: 'PATCH', headers: H,
           body: JSON.stringify(datos)
         });
         const data = await r.json();
         return res.status(200).json(data);
       }
 
-      // Guardar reserva
-      if (tabla === 'reservas') {
-        const r = await fetch(`${SUPABASE_URL}/rest/v1/reservas`, {
-          method: 'POST',
-          headers,
-          body: JSON.stringify(datos)
-        });
-        const data = await r.json();
-        return res.status(200).json(data);
-      }
-
-      // Guardar config
+      // UPSERT config (merge por clave primaria)
       if (tabla === 'config') {
-        const r = await fetch(`${SUPABASE_URL}/rest/v1/config`, {
+        const r = await fetch(`${SB}/rest/v1/config`, {
           method: 'POST',
-          headers: { ...headers, 'Prefer': 'return=representation,resolution=merge-duplicates' },
+          headers: { ...H, 'Prefer': 'return=representation,resolution=merge-duplicates' },
           body: JSON.stringify(datos)
         });
         const data = await r.json();
         return res.status(200).json(data);
       }
 
-      // Actualizar estado reserva
-      if (tabla === 'reservas' && accion === 'update') {
-        const r = await fetch(`${SUPABASE_URL}/rest/v1/reservas?id=eq.${filtro}`, {
-          method: 'PATCH',
-          headers,
+      // UPSERT eventos (merge por id)
+      if (tabla === 'eventos') {
+        const r = await fetch(`${SB}/rest/v1/eventos`, {
+          method: 'POST',
+          headers: { ...H, 'Prefer': 'return=representation,resolution=merge-duplicates' },
           body: JSON.stringify(datos)
         });
         const data = await r.json();
         return res.status(200).json(data);
       }
 
-      return res.status(400).json({ error: 'Tabla no reconocida' });
-    } catch(e) {
-      return res.status(500).json({ error: e.message });
-    }
-  }
+      // UPSERT sponsors
+      if (tabla === 'sponsors') {
+        const r = await fetch(`${SB}/rest/v1/sponsors`, {
+          method: 'POST',
+          headers: { ...H, 'Prefer': 'return=representation,resolution=merge-duplicates' },
+          body: JSON.stringify(datos)
+        });
+        const data = await r.json();
+        return res.status(200).json(data);
+      }
 
-  // PUT — actualizar
-  if (req.method === 'PUT') {
-    try {
-      const r = await fetch(`${SUPABASE_URL}/rest/v1/${tabla}?id=eq.${filtro}`, {
-        method: 'PATCH',
-        headers,
-        body: JSON.stringify(datos)
-      });
-      const data = await r.json();
-      return res.status(200).json(data);
-    } catch(e) {
-      return res.status(500).json({ error: e.message });
-    }
-  }
+      // INSERT reservas
+      if (tabla === 'reservas') {
+        const r = await fetch(`${SB}/rest/v1/reservas`, {
+          method: 'POST', headers: H,
+          body: JSON.stringify(datos)
+        });
+        const data = await r.json();
+        return res.status(200).json(data);
+      }
 
-  // DELETE
-  if (req.method === 'DELETE') {
-    try {
-      const { tabla: t, id } = req.query;
-      const r = await fetch(`${SUPABASE_URL}/rest/v1/${t}?id=eq.${id}`, {
-        method: 'DELETE',
-        headers
-      });
-      return res.status(200).json({ ok: true });
+      // INSERT mensajes (upsert por clave)
+      if (tabla === 'mensajes') {
+        const r = await fetch(`${SB}/rest/v1/mensajes`, {
+          method: 'POST',
+          headers: { ...H, 'Prefer': 'return=representation,resolution=merge-duplicates' },
+          body: JSON.stringify(datos)
+        });
+        const data = await r.json();
+        return res.status(200).json(data);
+      }
+
+      return res.status(400).json({ error: 'Tabla no reconocida: ' + tabla });
     } catch(e) {
+      console.error('Supabase error:', e);
       return res.status(500).json({ error: e.message });
     }
   }
