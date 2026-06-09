@@ -145,21 +145,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div id="evento-wrap" style="display:none"></div>
 
 <!-- CHAT -->
-
-<!-- SPONSORS CARRUSEL -->
-<div id="sponsors-section" style="display:none;margin:0 0 1rem;overflow:hidden;position:relative">
-  <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--tx3);text-align:center;margin-bottom:.75rem;padding:0 1rem">Nuestros sponsors</div>
-  <div style="overflow:hidden;width:100%">
-    <div id="sponsors-track" style="display:flex;gap:24px;align-items:center;animation:scrollSponsors 20s linear infinite;width:max-content">
-    </div>
-  </div>
-</div>
-<style>
-@keyframes scrollSponsors{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-#sponsors-track:hover{animation-play-state:paused}
-.sponsor-logo{width:80px;height:60px;object-fit:contain;filter:grayscale(30%);opacity:.85;transition:all .2s;flex-shrink:0}
-.sponsor-logo:hover{filter:grayscale(0%);opacity:1}
-</style>
 <div class="chat-section">
   <div class="chat-container">
     <div class="chat-hdr">
@@ -300,7 +285,7 @@ function popupReservar(){
 function initChat(barNombre){
   document.getElementById('chat-msgs').innerHTML='';
   chatHist=[];
-  const activos=(cfg.eventos||[]).filter(e=>e.activo);
+  const activos=eventosDB.length>0?eventosDB:(cfg.eventos||[]).filter(e=>e.activo);
   const eventoMsg = activos.length ? `\n\n🎭 Esta semana: *${activos[0].nombre}* — no te lo pierdas.` : '';
   chatMsg(`¡Hola! 👋 Bienvenido a *${barNombre}*.${eventoMsg}\n\n¿En qué te puedo ayudar? Puedo reservarte una mesa, contarte sobre nuestros eventos o darte info del bar. 🍺`, true);
 }
@@ -339,11 +324,11 @@ async function chatEnviar(){
   chatHist.push({role:'user',content:txt});
   chatTyping();
   try{
-    const activos=(cfg.eventos||[]).filter(e=>e.activo);
+    const activos=eventosDB.length>0?eventosDB:(cfg.eventos||[]).filter(e=>e.activo);
     const res=await fetch('/api/chat',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({messages:chatHist,cfg,eventoActual:activos[0]||null})
+      body:JSON.stringify({messages:chatHist,cfg,eventoActual:activos[0]||eventosDB[0]||null,eventos:eventosDB})
     });
     const data=await res.json();
     document.getElementById('typing')?.remove();
@@ -386,28 +371,41 @@ async function chatEnviar(){
 }
 
 
-async function cargarSponsors(){
+// Eventos cargados desde Supabase
+let eventosDB = [];
+let sponsorsDB = [];
+
+async function cargarEventosYSponsors(){
   try{
-    const r = await fetch('/api/supabase?tabla=sponsors');
-    const data = await r.json();
-    if(!Array.isArray(data)||!data.length) return;
-    const activos = data.filter(s=>s.activo).sort((a,b)=>(a.orden||0)-(b.orden||0));
-    if(!activos.length) return;
-    const track = document.getElementById('sponsors-track');
-    const section = document.getElementById('sponsors-section');
-    if(!track||!section) return;
-    // Duplicar para efecto infinito
-    const items = [...activos, ...activos];
-    track.innerHTML = items.map(s=>s.img?
-      `<img src="${s.img}" class="sponsor-logo" alt="${s.nombre}" title="${s.nombre}">`
-      :`<div style="width:80px;height:60px;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--tx3);text-align:center;flex-shrink:0">${s.nombre}</div>`
-    ).join('');
-    section.style.display='block';
-  }catch(e){}
+    const [evRes, spRes] = await Promise.all([
+      fetch('/api/supabase?tabla=eventos'),
+      fetch('/api/supabase?tabla=sponsors')
+    ]);
+    const evData = await evRes.json();
+    const spData = await spRes.json();
+    if(Array.isArray(evData)) eventosDB = evData.filter(e=>e.activo);
+    if(Array.isArray(spData)) sponsorsDB = spData.filter(s=>s.activo);
+    renderSponsorsCarrusel();
+    console.log('Eventos cargados:', eventosDB.length, 'Sponsors:', sponsorsDB.length);
+  }catch(e){
+    console.error('Error cargando datos:', e);
+  }
+}
+
+function renderSponsorsCarrusel(){
+  const section = document.getElementById('sponsors-section');
+  const track = document.getElementById('sponsors-track');
+  if(!section||!track||!sponsorsDB.length) return;
+  const items = [...sponsorsDB, ...sponsorsDB];
+  track.innerHTML = items.map(s=>s.img
+    ?`<img src="${s.img}" style="width:80px;height:60px;object-fit:contain;filter:grayscale(20%);opacity:.85;flex-shrink:0" alt="${s.nombre}" title="${s.nombre}">`
+    :`<div style="width:80px;height:60px;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--tx3);text-align:center;flex-shrink:0;padding:4px">${s.nombre}</div>`
+  ).join('');
+  section.style.display='block';
 }
 
 init();
-cargarSponsors();
+cargarEventosYSponsors();
 if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
 </script>
 </body>
