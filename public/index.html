@@ -145,6 +145,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div id="evento-wrap" style="display:none"></div>
 
 <!-- CHAT -->
+
+<!-- SPONSORS CARRUSEL -->
+<div id="sponsors-section" style="display:none;margin:0 0 1rem;overflow:hidden;position:relative">
+  <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--tx3);text-align:center;margin-bottom:.75rem;padding:0 1rem">Nuestros sponsors</div>
+  <div style="overflow:hidden;width:100%">
+    <div id="sponsors-track" style="display:flex;gap:24px;align-items:center;animation:scrollSponsors 20s linear infinite;width:max-content">
+    </div>
+  </div>
+</div>
+<style>
+@keyframes scrollSponsors{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+#sponsors-track:hover{animation-play-state:paused}
+.sponsor-logo{width:80px;height:60px;object-fit:contain;filter:grayscale(30%);opacity:.85;transition:all .2s;flex-shrink:0}
+.sponsor-logo:hover{filter:grayscale(0%);opacity:1}
+</style>
 <div class="chat-section">
   <div class="chat-container">
     <div class="chat-hdr">
@@ -370,7 +385,29 @@ async function chatEnviar(){
   }
 }
 
+
+async function cargarSponsors(){
+  try{
+    const r = await fetch('/api/supabase?tabla=sponsors');
+    const data = await r.json();
+    if(!Array.isArray(data)||!data.length) return;
+    const activos = data.filter(s=>s.activo).sort((a,b)=>(a.orden||0)-(b.orden||0));
+    if(!activos.length) return;
+    const track = document.getElementById('sponsors-track');
+    const section = document.getElementById('sponsors-section');
+    if(!track||!section) return;
+    // Duplicar para efecto infinito
+    const items = [...activos, ...activos];
+    track.innerHTML = items.map(s=>s.img?
+      `<img src="${s.img}" class="sponsor-logo" alt="${s.nombre}" title="${s.nombre}">`
+      :`<div style="width:80px;height:60px;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--tx3);text-align:center;flex-shrink:0">${s.nombre}</div>`
+    ).join('');
+    section.style.display='block';
+  }catch(e){}
+}
+
 init();
+cargarSponsors();
 if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
 </script>
 </body>
