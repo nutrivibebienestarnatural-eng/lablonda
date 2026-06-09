@@ -3,7 +3,6 @@
     { "source": "/panel", "destination": "/panel.html" },
     { "source": "/admin", "destination": "/admin.html" },
     { "source": "/e/:slug", "destination": "/evento.html" },
-    { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/((?!api|admin|panel|evento).*)", "destination": "/index.html" }
   ]
 }
